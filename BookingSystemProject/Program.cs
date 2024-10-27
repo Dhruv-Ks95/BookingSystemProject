@@ -23,7 +23,7 @@ internal class Program
         bookingService = new BookingService(bookings, seats);
 
         // Creating sample employees (using Employee class)
-        Employee user = new Employee("Dhruv", "dhruvk@gmail.com", RoleType.User);
+        Employee user = new Employee("Dhruv", "dhruvk@company.com", RoleType.User);
         Employee admin = new Employee("Admin", "admin@company.com", RoleType.Admin);
 
         // Creating a list of employees in the company
