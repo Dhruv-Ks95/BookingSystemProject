@@ -269,6 +269,7 @@ internal class Program
         Console.ForegroundColor = ConsoleColor.Magenta;
         Console.Write("Enter the Booking ID to cancel: ");
         Console.ResetColor();
+
         if (int.TryParse(Console.ReadLine(), out int bookingId))
         {
             if (bookingService.CancelUserBookings(employee, bookingId))
@@ -352,7 +353,7 @@ internal class Program
 
                         while (!isValidUser)
                         {
-                            // Choose a user
+                            // TODO: select employee by employee ID / PRN
                             Console.WriteLine("Select an employee to book the seat for:");
                             for (int i = 0; i < users.Count; i++)
                             {

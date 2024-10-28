@@ -2,7 +2,7 @@
 
 namespace BookingSystemProject.Services;
 
-public class BookingService
+public class BookingService : IBookingService
 {
     private List<Booking> bookings;
     private List<Seat> seats;
