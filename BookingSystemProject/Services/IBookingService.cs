@@ -11,7 +11,7 @@ public interface IBookingService
 
     // For admin services
     bool BookSeatForEmployee(Employee admin, Employee employeeToBookFor, DateTime dateToBookOn, int seatToBook);
-    List<Booking> GetAllBookings(Employee admin, DateTime dateToSearch);
+    List<Booking> GetAllBookingsOnDate(Employee admin, DateTime dateToSearch);
     void ModifyAnyBooking(Employee admin, DateTime dateToModifyBookingOn, int bookingId, int modifiedSeatNumber);
     void CancelAnyBooking(Employee admin, int bookingId);
 

@@ -1,15 +1,16 @@
 ﻿using BookingSystemProject.Models;
+using BookingSystemProject.Repository;
 
 namespace BookingSystemProject.Services;
 
 public class BookingService : IBookingService
 {
-    private List<Booking> bookings;
-    private List<Seat> seats;
-    public BookingService(List<Booking> bookings, List<Seat> seats)
+    private IBookingRepository bookingRepo;
+    private ISeatRepository seatRepo;
+    public BookingService(IBookingRepository bookingRepository, ISeatRepository seatRepository)
     {
-        this.bookings = bookings;
-        this.seats = seats;
+        bookingRepo = bookingRepository;
+        seatRepo = seatRepository;
     }
 
     // Regular Booking Services
@@ -44,7 +45,7 @@ public class BookingService : IBookingService
         if (selectedSeat != null)
         {
             var booking = new Booking(employee.EmployeeId, selectedSeat.SeatNumber, bookingDate);
-            bookings.Add(booking);
+            bookingRepo.AddBooking(booking);
             return true;
         }
         else
@@ -55,7 +56,7 @@ public class BookingService : IBookingService
     public List<Booking> GetUserBookings(Employee employee)
     {
         List<Booking> userBookings = new List<Booking>();
-        foreach (var booking in bookings) 
+        foreach (var booking in bookingRepo.GetAllBookings()) 
         {
             if (booking.UserId == employee.EmployeeId && booking.BookingDate >= DateTime.Today && booking.BookingDate <= DateTime.Today.AddDays(30))
             {
@@ -86,7 +87,7 @@ public class BookingService : IBookingService
         {
             return false;
         }
-        bookings.Remove(bookingToCancel);
+        bookingRepo.RemoveBooking(bookingIdToDelete);
         return true;
     }
 
@@ -99,15 +100,15 @@ public class BookingService : IBookingService
         }
         return BookSeat(employeeToBookFor, dateToBookOn, seatToBook);
     }       
-    public List<Booking> GetAllBookings(Employee admin, DateTime dateToSearch)
+    public List<Booking> GetAllBookingsOnDate(Employee admin, DateTime dateToSearch)
     {
         if (admin.Role != RoleType.Admin)
         {
-            throw new Exception("You do not permissions !");
+            throw new Exception("Unauthorized access to Admin Feature!");
         }
 
         List<Booking> bookingsOnSpecifiedDate = new List<Booking>();
-        foreach (var booking in bookings)
+        foreach (var booking in bookingRepo.GetAllBookings())
         {
             if (booking.BookingDate == dateToSearch)
             {
@@ -124,16 +125,16 @@ public class BookingService : IBookingService
         }
 
         // get all bookings on the given date -> just to check if bookings exist on that day
-        List<Booking> bookingsOnDate = GetAllBookings(admin, dateToModifyBookingOn);
+        List<Booking> bookingsOnDate = GetAllBookingsOnDate(admin, dateToModifyBookingOn);
         if(bookingsOnDate.Count == 0) // if no bookings exist 
         {
             throw new Exception("No bookings found on Selected Date!");
         }
         // Get Booking via bookingId
-        Booking bookingToModify = GetBookingById(bookingId);
+        Booking bookingToModify = bookingRepo.GetBookingById(bookingId);
         if (bookingToModify == null)
         {
-            throw new Exception("Invalid Booking Id or Booking ID does not exist");
+            throw new Exception("Invalid Booking Id / Booking ID does not exist");
         }
 
         // get available seats on the selected date
@@ -165,12 +166,12 @@ public class BookingService : IBookingService
     {
         if(admin.Role != RoleType.Admin)
         {
-            throw new Exception("Unautorized Acess to admin feature!");
+            throw new Exception("Unauthorized Access to admin feature!");
         }
 
         bool bookingExists = false;
         Booking bookingToDelete = null;
-        foreach (var booking in bookings)
+        foreach (var booking in bookingRepo.GetAllBookings())
         {
             if (booking.BookingId == bookingId)
             {
@@ -183,39 +184,20 @@ public class BookingService : IBookingService
         {
             throw new Exception("Invalid Booking ID provided!");
         }
-        bookings.Remove(bookingToDelete);
+        bookingRepo.RemoveBooking(bookingId);
     }
 
 
     // Additional Methods
-    private bool IsValidDate(DateTime givenDate)
-    {
-        if(givenDate < DateTime.Today ||  givenDate > DateTime.Today.AddDays(30))
-        {
-            return false;            
-        }
-        return true;
-    }    
-    private Booking GetBookingById(int bookingId)
-    {
-        Booking res = null;
-        foreach (var booking in bookings)
-        {
-            if (booking.BookingId == bookingId)
-            {
-                res = booking; break;
-            }
-        }
-        return res;
-    }
+
     public List<Seat> GetSeatsOnGivenDay(DateTime givenDate)
     {
         List<Seat> availableSeats = new List<Seat>();
-        foreach (var seat in seats)
+        foreach (var seat in seatRepo.GetAllSeats())
         {
             bool isBooked = false;
 
-            foreach (var booking in bookings)
+            foreach (var booking in bookingRepo.GetAllBookings())
             {
                 if (booking.SeatNumber == seat.SeatNumber && booking.BookingDate == givenDate)
                 {
@@ -231,5 +213,12 @@ public class BookingService : IBookingService
         }
         return availableSeats;
     }
-
+    private bool IsValidDate(DateTime givenDate)
+    {
+        if(givenDate < DateTime.Today ||  givenDate > DateTime.Today.AddDays(30))
+        {
+            return false;            
+        }
+        return true;
+    }            
 }
