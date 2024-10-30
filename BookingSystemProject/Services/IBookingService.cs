@@ -2,7 +2,7 @@
 
 namespace BookingSystemProject.Services;
 
-internal interface IBookingService
+public interface IBookingService
 {
     // For user services 
     bool BookSeat(Employee employee, DateTime bookingDate, int SeatNumber);

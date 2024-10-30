@@ -2,7 +2,7 @@
 
 namespace BookingSystemProject.Services;
 
-internal class ValidationService : IValidationService
+public  class ValidationService : IValidationService
 {
     public bool IsValidDate(string enteredDate)
     {
