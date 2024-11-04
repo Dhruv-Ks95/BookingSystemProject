@@ -19,6 +19,7 @@ internal class Program
         IEmployeeRepository employeeRepository = new EmployeeRepository();
         ISeatRepository seatRepository = new SeatRepository();
         IBookingRepository bookingRepository = new BookingRepository();
+        IValidationService validationService = new ValidationService();
 
         bookingService = new BookingService(bookingRepository,seatRepository);
         employeeService = new EmployeeService(employeeRepository);
@@ -43,7 +44,7 @@ internal class Program
         employeeService.AddAnEmployee(employeeService.CreateAnEmployee("Mr.Das", "das@company.com", RoleType.User));
         employeeService.AddAnEmployee(employeeService.CreateAnEmployee("Mr.Reddy", "reddy@company.com", RoleType.User));
 
-        MenuMethods menuMethods = new MenuMethods(bookingService);
+        MenuMethods menuMethods = new MenuMethods(bookingService,validationService,employeeService);
 
         // -----------------INITIALIZING------------------------END
 

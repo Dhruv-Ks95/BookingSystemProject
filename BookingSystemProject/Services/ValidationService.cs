@@ -19,7 +19,7 @@ public  class ValidationService : IValidationService
 
     public bool IsEmptyList<T>(List<T> list)
     {
-        if(list.Count  == 0 || list == null) return true;
+        if(list == null || list.Count  == 0) return true;
 
         return false;
     }

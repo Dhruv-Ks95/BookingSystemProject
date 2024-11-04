@@ -1,13 +1,19 @@
 ﻿using BookingSystemProject.Models;
 using BookingSystemProject.Services;
+using System.Reflection.Metadata;
 
 namespace BookingSystemProject.Utilities;
 public class MenuMethods
 {
-    public IBookingService bookingService;
-    public MenuMethods(IBookingService bookingService)
+    private IBookingService bookingService;
+    private IValidationService validationService;
+    private IEmployeeService employeeService;
+    private ConsoleOutputService consoleOutputService = new ConsoleOutputService();
+    public MenuMethods(IBookingService bookingService, IValidationService validationService, IEmployeeService employeeService)
     {
         this.bookingService = bookingService;
+        this.validationService = validationService;
+        this.employeeService = employeeService;
     }
 
     // DASHBOARDS
@@ -39,10 +45,8 @@ public class MenuMethods
                     Console.WriteLine("Logging out.");
                     hasLoggedOut = true;
                     break;
-                default:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("\n Invalid input. Please try again.\n");
-                    Console.ResetColor();
+                default:                    
+                    consoleOutputService.PrintError("\n Invalid input. Please try again.\n");                    
                     break;
             }
         }
@@ -66,16 +70,16 @@ public class MenuMethods
             switch (choice)
             {
                 case "1":
-                    BookSeatForEmployee(admin, employees); // Now uses Employee
+                    BookSeatForEmployee(admin); // Now uses Employee
                     break;
                 case "2":
-                    ViewAllBookings(admin, employees);
+                    ViewAllBookings(admin);
                     break;
                 case "3":
-                    ModifyBooking(admin, employees);
+                    ModifyBooking(admin);
                     break;
                 case "4":
-                    DeleteBooking(admin, employees);
+                    DeleteBooking(admin);
                     break;
                 case "5":
                     Console.WriteLine("Logging out.");
@@ -83,9 +87,7 @@ public class MenuMethods
                     break;
 
                 default:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Invalid input. Please try again.");
-                    Console.ResetColor();
+                    consoleOutputService.PrintError("Invalid input. Please try again.");                    
                     break;
             }
         }
@@ -94,473 +96,232 @@ public class MenuMethods
     private void BookSeat(Employee employee)
     {
         Console.Write("Enter the date for booking (yyyy-MM-dd): ");
-        if (DateTime.TryParse(Console.ReadLine(), out DateTime bookingDate))
+        string bookingDate = Console.ReadLine();
+        if(!validationService.IsValidDate(bookingDate))
         {
-            // Validating Date
-            if (bookingDate < DateTime.Today || bookingDate > DateTime.Today.AddDays(30))
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("\n You can only book a seat within the next 30 days. \n");
-                Console.ResetColor();
-                return;
-            }
-
-            // Show available seats on the selected date
-            var availableSeats = bookingService.GetSeatsOnGivenDay(bookingDate);
-
-            if (availableSeats.Count == 0)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("\nNo seats are available on the selected date.\n ");
-                Console.ResetColor();
-                return;
-            }
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Available seats:");
-            foreach (var seat in availableSeats)
-            {
-                Console.WriteLine($"Seat Number: {seat.SeatNumber}");
-            }
-            Console.ResetColor();
-
-            bool isValidInput = false;
-            while (!isValidInput)
-            {
-                Console.WriteLine("Please enter a seat number:");
-                if (int.TryParse(Console.ReadLine(), out int seatNumber))
-                {
-                    Seat selectedSeat = null;
-                    foreach (var seat in availableSeats)
-                    {
-                        if (seat.SeatNumber == seatNumber)
-                        {
-                            selectedSeat = seat;
-                            break;
-                        }
-                    }
-                    if (selectedSeat != null)
-                    {
-                        bool result = bookingService.BookSeat(employee, bookingDate, seatNumber);
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        if (result)
-                        {
-                            Console.WriteLine($"Booking successful!");
-                        }
-                        Console.ResetColor();
-                        isValidInput = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine("\nInvalid seat number. Please try again. \n ");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Please enter a valid seat number.");
-                }
-            }
+            consoleOutputService.PrintError("Invalid Booking Date");
+            return;
+        }
+        DateTime.TryParse(bookingDate, out DateTime bookingDay);
+        List<Seat> availableSeats = bookingService.GetSeatsOnGivenDay(bookingDay);
+        if(validationService.IsEmptyList(availableSeats))
+        {
+            consoleOutputService.PrintError("No Seats available on Choosen Day");
+            return;
+        }
+        consoleOutputService.PrintSeats(availableSeats);
+        Console.WriteLine("Please select a seat Number from the list :");
+        string selectedSeatNumber = Console.ReadLine();
+        if (!validationService.IsValidSeatNumber(selectedSeatNumber, availableSeats))
+        {
+            consoleOutputService.PrintError("Invalid seat number");
+            return;
+        }
+        int.TryParse(selectedSeatNumber, out int seatNumber);
+        if(bookingService.BookSeat(employee,bookingDay,seatNumber))
+        {
+            consoleOutputService.PrintSuccess("Seat booked Successfully!");
+            return;
         }
         else
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Invalid date format. Please enter a date in yyyy-MM-dd format.");
-            Console.ResetColor();
+            consoleOutputService.PrintError("Seat could not be booked!");
         }
+        return;
     }
 
     public void ViewUserBookings(Employee employee)
     {
         List<Booking> userBookings = bookingService.GetUserBookings(employee);
 
-        if (userBookings.Count == 0)
+        if (validationService.IsEmptyList(userBookings))
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("You have no bookings in the next 30 days.");
-            Console.ResetColor();
+            consoleOutputService.PrintWarning("You have no bookings in the next 30 days.");
             return;
         }
-
-        Console.WriteLine("Your bookings:");
-        foreach (var booking in userBookings)
-        {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"Booking ID: {booking.BookingId}, Seat Number: {booking.SeatNumber}, Date: {booking.BookingDate.ToShortDateString()}");
-            Console.ResetColor();
-        }
+        consoleOutputService.PrintBookings(userBookings);
     }
 
     public void CancelUserBooking(Employee employee)
     {
         List<Booking> userBookings = bookingService.GetUserBookings(employee);
 
-        if (userBookings.Count == 0)
+        if (validationService.IsEmptyList(userBookings))
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("You have no bookings to cancel in the next 30 days.");
-            Console.ResetColor();
+            consoleOutputService.PrintWarning("You have no bookings to cancel in the next 30 days.");
             return;
         }
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine("Your bookings:");
-        foreach (var booking in userBookings)
+        consoleOutputService.PrintBookings(userBookings);
+
+        consoleOutputService.PrintDanger("Enter the Booking ID to cancel: ");
+
+        string bookinId = Console.ReadLine();
+        if(!validationService.IsValidBookingId(bookinId,userBookings))
         {
-            Console.WriteLine($"Booking ID: {booking.BookingId}, Seat Number: {booking.SeatNumber}, Date: {booking.BookingDate.ToShortDateString()}");
+            consoleOutputService.PrintError("Invalid Booking ID");
+            return;
         }
-        Console.ResetColor();
+        int.TryParse(bookinId, out int bookingId);
 
-        Console.ForegroundColor = ConsoleColor.Magenta;
-        Console.Write("Enter the Booking ID to cancel: ");
-        Console.ResetColor();
-
-        if (int.TryParse(Console.ReadLine(), out int bookingId))
+        if(bookingService.CancelUserBookings(employee,bookingId))
         {
-            if (bookingService.CancelUserBookings(employee, bookingId))
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Booking cancelled successfully");
-                Console.ResetColor();
-            }
-            else
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Provided Booking ID does not exists");
-                Console.ResetColor();
-            }
+            consoleOutputService.PrintSuccess("Booking cancelled successfully!");
         }
         else
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Please enter a valid Booking ID in correct format.");
-            Console.ResetColor();
+            consoleOutputService.PrintError("Cancellation unsuccessful!");
         }
+        return;
+
     }
 
     // ADMIN FUNCTIONS
-    public void BookSeatForEmployee(Employee admin, List<Employee> users)
+    public void BookSeatForEmployee(Employee admin)
     {
         Console.Write("\nEnter the date for booking (yyyy-MM-dd): ");
-        if (DateTime.TryParse(Console.ReadLine(), out DateTime bookingDate))
+        string dateToBookOn = Console.ReadLine();
+        if(!validationService.IsValidDate(dateToBookOn))
         {
-            // Check if the booking date is within the next 30 days
-            if (bookingDate < DateTime.Today || bookingDate > DateTime.Today.AddDays(30))
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("You can only book a seat within the next 30 days.");
-                Console.ResetColor();
-                return;
-            }
-
-            // Show available seats on the selected date -> getSeatsOnSpecifiedDate?
-            var availableSeats = bookingService.GetSeatsOnGivenDay(bookingDate);
-
-            if (availableSeats.Count == 0)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("\nNo seats are available on the selected date.\n ");
-                Console.ResetColor();
-                return;
-            }
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Available seats:");
-            foreach (var seat in availableSeats)
-            {
-                Console.WriteLine($"Seat Number: {seat.SeatNumber}");
-            }
-            Console.ResetColor();
-
-            // Choose a seat
-            bool isValidSeat = false;
-            Seat selectedSeat = null;
-
-            while (!isValidSeat)
-            {
-                Console.Write("Enter the seat number you wish to book: ");
-                if (int.TryParse(Console.ReadLine(), out int seatNumber))
-                {
-                    foreach (var seat in availableSeats)
-                    {
-                        if (seat.SeatNumber == seatNumber)
-                        {
-                            selectedSeat = seat;
-                            isValidSeat = true;
-                            break;
-                        }
-                    }
-
-                    if (selectedSeat != null)
-                    {
-                        bool isValidUser = false;
-                        Employee selectedUser = null;
-
-                        while (!isValidUser)
-                        {
-                            // TODO: select employee by employee ID / PRN
-                            Console.WriteLine("Select an employee to book the seat for:");
-                            for (int i = 0; i < users.Count; i++)
-                            {
-                                Console.WriteLine($"{i + 1}. {users[i].Name}");
-                            }
-
-                            if (int.TryParse(Console.ReadLine(), out int userIndex) && userIndex > 0 && userIndex <= users.Count)
-                            {
-                                selectedUser = users[userIndex - 1];
-                                isValidUser = true;
-
-                                // Create a new booking
-                                if (bookingService.BookSeatForEmployee(admin, selectedUser, bookingDate, seatNumber))
-                                {
-                                    Console.ForegroundColor = ConsoleColor.Green;
-                                    Console.WriteLine($"Booking successful for {selectedUser.Name}! Seat Number: {selectedSeat.SeatNumber}, Date: {bookingDate.ToShortDateString()}");
-                                    Console.ResetColor();
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Error while booking!");
-                                }
-                            }
-                            else
-                            {
-                                Console.ForegroundColor = ConsoleColor.Red;
-                                Console.WriteLine("Invalid employee selection. Please try again.");
-                                Console.ResetColor();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Invalid seat number. Please try again.");
-                        Console.ResetColor();
-                    }
-                }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Please enter a valid seat number.");
-                    Console.ResetColor();
-                }
-            }
+            consoleOutputService.PrintError("Invalid Date!");
+            return;
+        }
+        DateTime.TryParse(dateToBookOn, out DateTime bookingDate);
+        List<Seat> availableSeats = bookingService.GetSeatsOnGivenDay(bookingDate);
+        if(validationService.IsEmptyList(availableSeats))
+        {
+            consoleOutputService.PrintWarning("All seats booked on selected Date!");
+            return;
+        }
+        consoleOutputService.PrintSeats(availableSeats);
+        Console.WriteLine("Please select a Seat Number from the list to Book ");
+        string selectedSeatNumber = Console.ReadLine();
+        if(!validationService.IsValidSeatNumber(selectedSeatNumber,availableSeats))
+        {
+            consoleOutputService.PrintError("Invalid Seat number selected!");
+            return;
+        }
+        int.TryParse(selectedSeatNumber,out int seatNumber);
+        List<Employee> employees = employeeService.GetAllEmployees();
+        consoleOutputService.PrintEmployees(employees);
+        Console.WriteLine("Select User by thier Employee ID: ");
+        string userToBeSelected = Console.ReadLine();
+        if(!validationService.IsValidUser(userToBeSelected,employees))
+        {
+            consoleOutputService.PrintError("Invalid Employee Id provided! Try again");
+            return;
+        }
+        int.TryParse(userToBeSelected, out int userId);
+        Employee userToBookFor = employeeService.GetEmployeeByEmployeeId(userId);
+        if(bookingService.BookSeatForEmployee(admin,userToBookFor,bookingDate,seatNumber))
+        {
+            consoleOutputService.PrintSuccess("Booking Successful!");
         }
         else
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Invalid date format. Please enter a date in yyyy-MM-dd format.");
-            Console.ResetColor();
+            consoleOutputService.PrintError("Unable To book!");
         }
+
     }
 
-    public void ModifyBooking(Employee admin, List<Employee> userList)
+    public void ModifyBooking(Employee admin)
     {
         Console.Write("Enter the date of the booking to modify (yyyy-MM-dd): ");
-        if (DateTime.TryParse(Console.ReadLine(), out DateTime bookingDate))
+        string dateToSearch = Console.ReadLine();
+        if (!validationService.IsValidDate(dateToSearch))
         {
-            // Filter bookings on the specified date
-            List<Booking> bookingsOnDate = bookingService.GetAllBookingsOnDate(admin, bookingDate);
-
-            if (bookingsOnDate.Count == 0)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("No bookings found on the selected date.");
-                Console.ResetColor();
-                return;
-            }
-
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Bookings on the selected date:");
-            foreach (var booking in bookingsOnDate)
-            {
-                Employee selectedUser = null;
-                foreach (var usertoselect in userList)
-                {
-                    if (booking.UserId == usertoselect.EmployeeId)
-                    {
-                        selectedUser = usertoselect;
-                        break;
-                    }
-                }
-                Console.WriteLine($"Booking ID: {booking.BookingId}, Seat Number: {booking.SeatNumber}, User: {selectedUser.Name}");
-            }
-            Console.ResetColor();
-
-            // Select a booking to modify
-            Console.Write("\nEnter the Booking ID to modify: ");
-            if (int.TryParse(Console.ReadLine(), out int bookingId))
-            {
-                Booking bookingToModify = null;
-                foreach (var booking in bookingsOnDate)
-                {
-                    if (booking.BookingId == bookingId)
-                    {
-                        bookingToModify = booking;
-                        break;
-                    }
-                }
-                if (bookingToModify != null)
-                {
-                    // Show available seats on the selected date
-                    List<Seat> availableSeats = bookingService.GetSeatsOnGivenDay(bookingDate);
-                    if (availableSeats.Count == 0)
-                    {
-                        Console.WriteLine("No seats avaialble for modification");
-                        return;
-                    }
-
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Available seats:");
-                    foreach (var seat in availableSeats)
-                    {
-                        Console.WriteLine($"Seat Number: {seat.SeatNumber}");
-                    }
-                    Console.ResetColor();
-
-                    // Choose a new seat
-                    Console.Write("Enter the new seat number: ");
-                    if (int.TryParse(Console.ReadLine(), out int newSeatNumber))
-                    {
-                        try
-                        {
-                            bookingService.ModifyAnyBooking(admin, bookingDate, bookingId, newSeatNumber);
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine("Booking Modified successfully!");
-                            Console.ResetColor();
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine("Modification unsucessful");
-                            Console.WriteLine(ex.Message);
-                        }
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Please enter a valid seat number.");
-                        Console.ResetColor();
-                    }
-                }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Invalid Booking ID. Please try again.");
-                    Console.ResetColor();
-                }
-            }
-            else
-            {
-                Console.WriteLine("Please enter a valid Booking ID.");
-            }
+            consoleOutputService.PrintError("Invalid Date Entered!");
+            return;
         }
-        else
+        DateTime.TryParse(dateToSearch,out DateTime bookingDate);
+        List<Booking> bookingsOnSelectedDate = bookingService.GetAllBookingsOnDate(admin,bookingDate);
+        if(validationService.IsEmptyList(bookingsOnSelectedDate))
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Invalid date format. Please enter a date in yyyy-MM-dd format.");
-            Console.ResetColor();
+            consoleOutputService.PrintError("No Bookings on selected Date!");
+            return;
         }
+        consoleOutputService.PrintBookings(bookingsOnSelectedDate);
+        Console.WriteLine("Enter a Booking ID to modify from the above list: ");
+        string bookingIdSelected = Console.ReadLine();
+        if(!validationService.IsValidBookingId(bookingIdSelected,bookingsOnSelectedDate))
+        {
+            consoleOutputService.PrintError("Invalid Booking ID!");
+            return;
+        }
+        int.TryParse(bookingIdSelected,out int bookingId);
+        List<Seat> availableSeats = bookingService.GetSeatsOnGivenDay(bookingDate);
+        if(validationService.IsEmptyList(availableSeats))
+        {
+            consoleOutputService.PrintError("No seats available to choose!");
+            return;
+        }
+        consoleOutputService.PrintSeats(availableSeats);
+        Console.WriteLine("Select a enw seat from the List: ");
+        string selectedSeatNumber = Console.ReadLine();
+        if(!validationService.IsValidSeatNumber(selectedSeatNumber,availableSeats))
+        {
+            consoleOutputService.PrintError("Invalid Seat Number provided!");
+            return;
+        }
+        int.TryParse(selectedSeatNumber, out int seatNumber);
+        bookingService.ModifyAnyBooking(admin, bookingDate, bookingId, seatNumber);
+        consoleOutputService.PrintSuccess("Booking modified Successfully!");     
     }
 
-    public void ViewAllBookings(Employee admin, List<Employee> userList)
+    public void ViewAllBookings(Employee admin)
     {
         Console.Write("Enter the date to view bookings (yyyy-MM-dd): ");
-        if (DateTime.TryParse(Console.ReadLine(), out DateTime bookingDate))
+        string bookingDateToSearch = Console.ReadLine();
+        if(!validationService.IsValidDate(bookingDateToSearch))
         {
-            List<Booking> bookingsOnDate = bookingService.GetAllBookingsOnDate(admin, bookingDate);
-
-            if (bookingsOnDate.Count == 0)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("No bookings found on the selected date.");
-                Console.ResetColor();
-                return;
-            }
-
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Bookings on the selected date:");
-            foreach (var booking in bookingsOnDate)
-            {
-                Employee selectedUser = null;
-                foreach (Employee userToSelect in userList)
-                {
-                    if (booking.UserId == userToSelect.EmployeeId)
-                    {
-                        selectedUser = userToSelect;
-                        break;
-                    }
-                }
-                Console.WriteLine($"Booking ID: {booking.BookingId}, Seat Number: {booking.SeatNumber}, User: {selectedUser.Name}");
-            }
-            Console.ResetColor();
+            consoleOutputService.PrintError("Invalid Date!");
+            return;
         }
-        else
+        DateTime.TryParse(bookingDateToSearch,out DateTime bookingDate);
+        List<Booking> bookingsOnDate = bookingService.GetAllBookingsOnDate(admin, bookingDate);
+        if(validationService.IsEmptyList(bookingsOnDate))
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Invalid date format. Please enter a date in yyyy-MM-dd format.");
-            Console.ResetColor();
+            consoleOutputService.PrintWarning("No Bookings on Selected Date!");
+            return;
         }
+        consoleOutputService.PrintBookings(bookingsOnDate);
+
     }
 
-    public void DeleteBooking(Employee admin, List<Employee> userList)
+    public void DeleteBooking(Employee admin)
     {
         Console.Write("Enter the date of the booking to delete (yyyy-MM-dd): ");
-        if (DateTime.TryParse(Console.ReadLine(), out DateTime bookingDate))
+        string dateToSearch = Console.ReadLine();
+        if (!validationService.IsValidDate(dateToSearch))
         {
-            List<Booking> bookingsOnDate = bookingService.GetAllBookingsOnDate(admin, bookingDate);
-
-            if (bookingsOnDate.Count == 0)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("No bookings found on the selected date.");
-                Console.ResetColor();
-                return;
-            }
-
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("Bookings on the selected date:");
-            foreach (var booking in bookingsOnDate)
-            {
-                Employee selectedUser = null;
-                foreach (Employee userToSelect in userList)
-                {
-                    if (booking.UserId == userToSelect.EmployeeId)
-                    {
-                        selectedUser = userToSelect;
-                        break;
-                    }
-                }
-                Console.WriteLine($"Booking ID: {booking.BookingId}, Seat Number: {booking.SeatNumber}, User: {selectedUser.Name}");
-            }
-            Console.ResetColor();
-
-            Console.ForegroundColor = ConsoleColor.Magenta;
-            Console.Write("Enter the Booking ID to delete: ");
-            Console.ResetColor();
-            if (int.TryParse(Console.ReadLine(), out int bookingId))
-            {
-                try
-                {
-                    bookingService.CancelAnyBooking(admin, bookingId);
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("Booking cancelled successfully");
-                    Console.ResetColor();
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Booking couldn't be cancelled!");
-                    Console.WriteLine(ex.Message);
-                }
-            }
-            else
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("Please enter a valid Booking ID.");
-                Console.ResetColor();
-            }
+            consoleOutputService.PrintError("Invalid Date!");
+            return;
         }
-        else
+        DateTime.TryParse(dateToSearch,out DateTime bookingDate);
+        List<Booking> bookingsOnDate = bookingService.GetAllBookingsOnDate(admin, bookingDate);
+        if(validationService.IsEmptyList(bookingsOnDate))
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Invalid date format. Please enter a date in yyyy-MM-dd format.");
-            Console.ResetColor();
+            consoleOutputService.PrintError("No Bookings on selected Date!");
+            return;
         }
+        consoleOutputService.PrintBookings(bookingsOnDate);
+        consoleOutputService.PrintDanger("Select Booking Id to delete from the list :");
+        string bookingIdToSelect = Console.ReadLine();
+        if (!validationService.IsValidBookingId(bookingIdToSelect, bookingsOnDate))
+        {
+            consoleOutputService.PrintError("Inavlid Booking ID!");
+            return;
+        }
+        int.TryParse(bookingIdToSelect,out int bookingId);
+        try
+        {
+            bookingService.CancelAnyBooking(admin, bookingId);
+            consoleOutputService.PrintSuccess("Booking Cancelled Successfully!");
+        }
+        catch (Exception ex)
+        {
+            consoleOutputService.PrintError("Booking couldn't be cancelled: ");
+            consoleOutputService.PrintError($"{ex.Message}");
+        }
+
     }
 }

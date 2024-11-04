@@ -50,7 +50,7 @@ public class BookingService : IBookingService
         }
         else
         {
-            throw new Exception("All seats are booked !");
+            throw new Exception("Invalid Seat Number Provided");
         }
     }
     public List<Booking> GetUserBookings(Employee employee)
@@ -124,6 +124,11 @@ public class BookingService : IBookingService
             throw new Exception("Unauthorized access to admin feature!");
         }
 
+        if(!IsValidDate(dateToModifyBookingOn))
+        {
+            throw new Exception("Incorrect DateTime");
+        }
+
         // get all bookings on the given date -> just to check if bookings exist on that day
         List<Booking> bookingsOnDate = GetAllBookingsOnDate(admin, dateToModifyBookingOn);
         if(bookingsOnDate.Count == 0) // if no bookings exist 
@@ -189,7 +194,6 @@ public class BookingService : IBookingService
 
 
     // Additional Methods
-
     public List<Seat> GetSeatsOnGivenDay(DateTime givenDate)
     {
         List<Seat> availableSeats = new List<Seat>();

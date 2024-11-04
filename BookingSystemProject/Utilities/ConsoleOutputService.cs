@@ -2,7 +2,7 @@
 
 namespace BookingSystemProject.Utilities;
 
-internal class CosoleOutputService
+public class ConsoleOutputService
 {
 
     public void PrintSuccess(string str)
@@ -28,7 +28,7 @@ internal class CosoleOutputService
 
     public void PrintDanger(string str)
     {
-        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.ForegroundColor = ConsoleColor.Magenta;
         Console.WriteLine(str);
         Console.ResetColor();
     }
@@ -51,7 +51,7 @@ internal class CosoleOutputService
         foreach (var booking in bookings)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"Booking ID: {booking.BookingId}, Seat Number: {booking.SeatNumber}, Date: {booking.BookingDate.ToShortDateString()}");
+            Console.WriteLine($"Booking ID: {booking.BookingId}, Seat Number: {booking.SeatNumber}, Date: {booking.BookingDate.ToShortDateString()}, UserId: {booking.UserId}");
             Console.ResetColor();
         }
     }

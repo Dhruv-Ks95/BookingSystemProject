@@ -12,4 +12,6 @@ public interface IValidationService
 
     bool IsValidBookingId(string bookingId,List<Booking> bookings);
 
+    bool IsValidUser(string userId,List<Employee> employees);
+
 }
