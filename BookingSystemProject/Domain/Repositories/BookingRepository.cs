@@ -1,5 +1,7 @@
-﻿using BookingSystemProject.Models;
-namespace BookingSystemProject.Repository;
+﻿using BookingSystemProject.Domain.Entities;
+using BookingSystemProject.Domain.Interfaces;
+
+namespace BookingSystemProject.Domain.Repositories;
 
 public class BookingRepository : IBookingRepository
 {
@@ -7,7 +9,7 @@ public class BookingRepository : IBookingRepository
 
     public BookingRepository()
     {
-        this._bookings = new List<Booking>();
+        _bookings = new List<Booking>();
     }
 
     public void AddBooking(Booking booking)

@@ -1,14 +1,15 @@
-﻿using BookingSystemProject.Models;
+﻿using BookingSystemProject.Application.Interfaces;
+using BookingSystemProject.Domain.Entities;
 
-namespace BookingSystemProject.Services;
+namespace BookingSystemProject.Application.Services;
 
-public  class ValidationService : IValidationService
+public class ValidationService : IValidationService
 {
     public bool IsValidDate(string enteredDate)
     {
-        if(DateTime.TryParse(enteredDate, out DateTime date))
+        if (DateTime.TryParse(enteredDate, out DateTime date))
         {
-            if(date <  DateTime.Today || date > DateTime.Today.AddDays(30))
+            if (date < DateTime.Today || date > DateTime.Today.AddDays(30))
             {
                 return false;
             }
@@ -19,7 +20,7 @@ public  class ValidationService : IValidationService
 
     public bool IsEmptyList<T>(List<T> list)
     {
-        if(list == null || list.Count  == 0) return true;
+        if (list == null || list.Count == 0) return true;
 
         return false;
     }
@@ -43,9 +44,9 @@ public  class ValidationService : IValidationService
     {
         if (int.TryParse(bookingId, out int id))
         {
-            foreach(var booking in bookings)
+            foreach (var booking in bookings)
             {
-                if(booking.BookingId == id)
+                if (booking.BookingId == id)
                 {
                     return true;
                 }
@@ -55,13 +56,13 @@ public  class ValidationService : IValidationService
         return false;
     }
 
-    public bool IsValidUser(string user,List<Employee> employees)
+    public bool IsValidUser(string user, List<Employee> employees)
     {
-        if(int.TryParse(user, out int id))
+        if (int.TryParse(user, out int id))
         {
-            foreach(Employee employee in employees)
+            foreach (Employee employee in employees)
             {
-                if(employee.EmployeeId == id)
+                if (employee.EmployeeId == id)
                 {
                     return true;
                 }

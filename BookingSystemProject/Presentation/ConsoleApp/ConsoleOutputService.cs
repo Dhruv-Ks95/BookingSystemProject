@@ -1,6 +1,6 @@
-﻿using BookingSystemProject.Models;
+﻿using BookingSystemProject.Domain.Entities;
 
-namespace BookingSystemProject.Utilities;
+namespace BookingSystemProject.Presentation.ConsoleApp;
 
 public class ConsoleOutputService
 {
@@ -12,9 +12,9 @@ public class ConsoleOutputService
         Console.ResetColor();
     }
 
-    public void PrintError(string str) 
+    public void PrintError(string str)
     {
-        Console.ForegroundColor = ConsoleColor.Red; 
+        Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine(str);
         Console.ResetColor();
     }
@@ -46,7 +46,7 @@ public class ConsoleOutputService
 
     public void PrintBookings(List<Booking> bookings)
     {
-        Console.ForegroundColor= ConsoleColor.Yellow;
+        Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine("Bookings: ");
         foreach (var booking in bookings)
         {
@@ -59,7 +59,7 @@ public class ConsoleOutputService
     public void PrintEmployees(List<Employee> employees)
     {
         Console.WriteLine("List of employees :");
-        foreach(var employee in employees)
+        foreach (var employee in employees)
         {
             Console.WriteLine($"Employee ID: {employee.EmployeeId}, Employee Name : {employee.Name}, Employee Email: {employee.Email} ");
         }

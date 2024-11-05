@@ -1,6 +1,7 @@
-﻿using BookingSystemProject.Models;
+﻿using BookingSystemProject.Domain.Entities;
+using BookingSystemProject.Domain.Interfaces;
 using System.Runtime.Serialization;
-namespace BookingSystemProject.Repository;
+namespace BookingSystemProject.Domain.Repositories;
 
 public class SeatRepository : ISeatRepository
 {

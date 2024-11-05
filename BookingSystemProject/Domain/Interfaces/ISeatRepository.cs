@@ -1,5 +1,6 @@
-﻿using BookingSystemProject.Models;
-namespace BookingSystemProject.Repository;
+﻿using BookingSystemProject.Domain.Entities;
+
+namespace BookingSystemProject.Domain.Interfaces;
 
 public interface ISeatRepository
 {

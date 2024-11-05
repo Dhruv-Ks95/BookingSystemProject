@@ -1,7 +1,8 @@
-﻿using BookingSystemProject.Models;
-using BookingSystemProject.Repository;
+﻿using BookingSystemProject.Application.Interfaces;
+using BookingSystemProject.Domain.Entities;
+using BookingSystemProject.Domain.Interfaces;
 
-namespace BookingSystemProject.Services;
+namespace BookingSystemProject.Application.Services;
 
 public class BookingService : IBookingService
 {
@@ -29,7 +30,7 @@ public class BookingService : IBookingService
         {
             throw new Exception("No seats available on provided Day!");
         }
-        
+
         // Get Seat from available Seats
         Seat selectedSeat = null;
         foreach (var seat in availableSeats)
@@ -56,13 +57,13 @@ public class BookingService : IBookingService
     public List<Booking> GetUserBookings(Employee employee)
     {
         List<Booking> userBookings = new List<Booking>();
-        foreach (var booking in bookingRepo.GetAllBookings()) 
+        foreach (var booking in bookingRepo.GetAllBookings())
         {
             if (booking.UserId == employee.EmployeeId && booking.BookingDate >= DateTime.Today && booking.BookingDate <= DateTime.Today.AddDays(30))
             {
                 userBookings.Add(booking);
             }
-        }            
+        }
         return userBookings;
     }
     public bool CancelUserBookings(Employee employee, int bookingIdToDelete)
@@ -92,14 +93,14 @@ public class BookingService : IBookingService
     }
 
     // Admin Booking Services
-    public bool BookSeatForEmployee(Employee admin, Employee employeeToBookFor, DateTime dateToBookOn, int seatToBook) 
+    public bool BookSeatForEmployee(Employee admin, Employee employeeToBookFor, DateTime dateToBookOn, int seatToBook)
     {
-        if(admin.Role != RoleType.Admin)
+        if (admin.Role != RoleType.Admin)
         {
             throw new Exception("Unauthorized access to Admin feature!");
         }
         return BookSeat(employeeToBookFor, dateToBookOn, seatToBook);
-    }       
+    }
     public List<Booking> GetAllBookingsOnDate(Employee admin, DateTime dateToSearch)
     {
         if (admin.Role != RoleType.Admin)
@@ -117,21 +118,21 @@ public class BookingService : IBookingService
         }
         return bookingsOnSpecifiedDate;
     }
-    public void ModifyAnyBooking(Employee admin, DateTime dateToModifyBookingOn,int bookingId, int modifiedSeatNumber)
+    public void ModifyAnyBooking(Employee admin, DateTime dateToModifyBookingOn, int bookingId, int modifiedSeatNumber)
     {
-        if(admin.Role != RoleType.Admin)
+        if (admin.Role != RoleType.Admin)
         {
             throw new Exception("Unauthorized access to admin feature!");
         }
 
-        if(!IsValidDate(dateToModifyBookingOn))
+        if (!IsValidDate(dateToModifyBookingOn))
         {
             throw new Exception("Incorrect DateTime");
         }
 
         // get all bookings on the given date -> just to check if bookings exist on that day
         List<Booking> bookingsOnDate = GetAllBookingsOnDate(admin, dateToModifyBookingOn);
-        if(bookingsOnDate.Count == 0) // if no bookings exist 
+        if (bookingsOnDate.Count == 0) // if no bookings exist 
         {
             throw new Exception("No bookings found on Selected Date!");
         }
@@ -144,7 +145,7 @@ public class BookingService : IBookingService
 
         // get available seats on the selected date
         List<Seat> availableSeats = GetSeatsOnGivenDay(dateToModifyBookingOn);
-        if(availableSeats.Count == 0)
+        if (availableSeats.Count == 0)
         {
             throw new Exception("No available seats left for modification!");
         }
@@ -153,7 +154,7 @@ public class BookingService : IBookingService
         bool isAvailable = false;
         foreach (var availableSeat in availableSeats)
         {
-            if(modifiedSeatNumber == availableSeat.SeatNumber)
+            if (modifiedSeatNumber == availableSeat.SeatNumber)
             {
                 isAvailable = true;
             }
@@ -165,11 +166,11 @@ public class BookingService : IBookingService
         }
 
         // Now update the seatnumber 
-        bookingToModify.SeatNumber = modifiedSeatNumber;      
-    }    
+        bookingToModify.SeatNumber = modifiedSeatNumber;
+    }
     public void CancelAnyBooking(Employee admin, int bookingId)
     {
-        if(admin.Role != RoleType.Admin)
+        if (admin.Role != RoleType.Admin)
         {
             throw new Exception("Unauthorized Access to admin feature!");
         }
@@ -219,10 +220,10 @@ public class BookingService : IBookingService
     }
     private bool IsValidDate(DateTime givenDate)
     {
-        if(givenDate < DateTime.Today ||  givenDate > DateTime.Today.AddDays(30))
+        if (givenDate < DateTime.Today || givenDate > DateTime.Today.AddDays(30))
         {
-            return false;            
+            return false;
         }
         return true;
-    }            
+    }
 }

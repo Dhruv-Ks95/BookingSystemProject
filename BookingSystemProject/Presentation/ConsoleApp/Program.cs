@@ -1,9 +1,10 @@
-﻿using BookingSystemProject.Models;
-using BookingSystemProject.Repository;
-using BookingSystemProject.Services;
-using BookingSystemProject.Utilities;
+﻿using BookingSystemProject.Application.Interfaces;
+using BookingSystemProject.Application.Services;
+using BookingSystemProject.Domain.Entities;
+using BookingSystemProject.Domain.Interfaces;
+using BookingSystemProject.Domain.Repositories;
 
-namespace BookingSystemProject;
+namespace BookingSystemProject.Presentation.ConsoleApp;
 
 internal class Program
 {
@@ -21,13 +22,13 @@ internal class Program
         IBookingRepository bookingRepository = new BookingRepository();
         IValidationService validationService = new ValidationService();
 
-        bookingService = new BookingService(bookingRepository,seatRepository);
+        bookingService = new BookingService(bookingRepository, seatRepository);
         employeeService = new EmployeeService(employeeRepository);
-        seatService = new SeatService(seatRepository);    
-        
-        
+        seatService = new SeatService(seatRepository);
 
-        for(int i=1;i<11;i++) // Add seats to the repository using the service 
+
+
+        for (int i = 1; i < 11; i++) // Add seats to the repository using the service 
         {
             seatService.AddASeat(seatService.CreateASeat(i));
         }
@@ -44,7 +45,7 @@ internal class Program
         employeeService.AddAnEmployee(employeeService.CreateAnEmployee("Mr.Das", "das@company.com", RoleType.User));
         employeeService.AddAnEmployee(employeeService.CreateAnEmployee("Mr.Reddy", "reddy@company.com", RoleType.User));
 
-        MenuMethods menuMethods = new MenuMethods(bookingService,validationService,employeeService);
+        MenuMethods menuMethods = new MenuMethods(bookingService, validationService, employeeService);
 
         // -----------------INITIALIZING------------------------END
 
@@ -62,10 +63,10 @@ internal class Program
 
             switch (choice)
             {
-                case "1":                    
+                case "1":
                     menuMethods.UserMenu(user);
                     break;
-                case "2":                    
+                case "2":
                     menuMethods.AdminMenu(admin, employeeService.GetAllEmployees());
                     break;
                 case "3":

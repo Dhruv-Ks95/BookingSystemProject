@@ -1,4 +1,4 @@
-﻿namespace BookingSystemProject.Models;
+﻿namespace BookingSystemProject.Domain.Entities;
 
 public enum RoleType
 {

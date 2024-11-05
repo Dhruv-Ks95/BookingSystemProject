@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookingSystemProject.Models
+namespace BookingSystemProject.Domain.Entities
 {
     public class Seat
     {

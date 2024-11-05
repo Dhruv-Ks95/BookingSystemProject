@@ -1,5 +1,6 @@
-﻿using BookingSystemProject.Models;
-namespace BookingSystemProject.Services;
+﻿using BookingSystemProject.Domain.Entities;
+
+namespace BookingSystemProject.Application.Interfaces;
 
 public interface IEmployeeService
 {
@@ -7,7 +8,7 @@ public interface IEmployeeService
     Employee GetEmployeeByEmployeeId(int id);
     List<Employee> GetAllEmployees();
     void AddAnEmployee(Employee employee);
-    bool UpdateAnEmployee(int id,string newName, string newEmail, RoleType newRole);
+    bool UpdateAnEmployee(int id, string newName, string newEmail, RoleType newRole);
     void RemoveAnEmployee(Employee employee);
 
 }

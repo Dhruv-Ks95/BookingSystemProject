@@ -1,6 +1,8 @@
-﻿using BookingSystemProject.Models;
-using BookingSystemProject.Repository;
-namespace BookingSystemProject.Services;
+﻿using BookingSystemProject.Application.Interfaces;
+using BookingSystemProject.Domain.Entities;
+using BookingSystemProject.Domain.Interfaces;
+
+namespace BookingSystemProject.Application.Services;
 
 public class EmployeeService : IEmployeeService
 {
@@ -34,7 +36,7 @@ public class EmployeeService : IEmployeeService
     public bool UpdateAnEmployee(int id, string newName, string newEmail, RoleType newRole)
     {
         Employee emp = employeeRepository.GetEmployeeById(id);
-        if(emp != null)
+        if (emp != null)
         {
             emp.Name = newName;
             emp.Email = newEmail;

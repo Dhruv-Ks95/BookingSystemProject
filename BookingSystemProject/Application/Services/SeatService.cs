@@ -1,6 +1,8 @@
-﻿using BookingSystemProject.Models;
-using BookingSystemProject.Repository;
-namespace BookingSystemProject.Services;
+﻿using BookingSystemProject.Application.Interfaces;
+using BookingSystemProject.Domain.Entities;
+using BookingSystemProject.Domain.Interfaces;
+
+namespace BookingSystemProject.Application.Services;
 public class SeatService : ISeatService
 {
     private ISeatRepository seatRepository;

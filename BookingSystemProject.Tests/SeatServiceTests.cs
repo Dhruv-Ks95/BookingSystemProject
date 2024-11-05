@@ -1,6 +1,6 @@
-﻿using BookingSystemProject.Models;
-using BookingSystemProject.Repository;
-using BookingSystemProject.Services;
+﻿using BookingSystemProject.Application.Services;
+using BookingSystemProject.Domain.Entities;
+using BookingSystemProject.Domain.Repositories;
 using FluentAssertions;
 
 namespace BookingSystemProject.Tests;

@@ -1,5 +1,7 @@
-﻿using BookingSystemProject.Models;
-namespace BookingSystemProject.Repository;
+﻿using BookingSystemProject.Domain.Entities;
+using BookingSystemProject.Domain.Interfaces;
+
+namespace BookingSystemProject.Domain.Repositories;
 
 public class EmployeeRepository : IEmployeeRepository
 {
@@ -16,7 +18,7 @@ public class EmployeeRepository : IEmployeeRepository
     }
     public void RemoveEmployee(int employeeId)
     {
-        _employees.RemoveAll(e =>  e.EmployeeId == employeeId);
+        _employees.RemoveAll(e => e.EmployeeId == employeeId);
     }
     public Employee GetEmployeeById(int employeeId)
     {

@@ -1,5 +1,6 @@
-﻿using BookingSystemProject.Models;
-namespace BookingSystemProject.Services;
+﻿using BookingSystemProject.Domain.Entities;
+
+namespace BookingSystemProject.Application.Interfaces;
 public interface ISeatService
 {
     Seat CreateASeat(int seatNumber);

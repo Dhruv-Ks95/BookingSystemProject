@@ -1,5 +1,6 @@
-﻿using BookingSystemProject.Models;
-namespace BookingSystemProject.Repository;
+﻿using BookingSystemProject.Domain.Entities;
+
+namespace BookingSystemProject.Domain.Interfaces;
 
 public interface IBookingRepository
 {
@@ -7,5 +8,5 @@ public interface IBookingRepository
     void RemoveBooking(int bookingId);
     Booking GetBookingById(int bookingId);
     List<Booking> GetAllBookings();
-    
+
 }

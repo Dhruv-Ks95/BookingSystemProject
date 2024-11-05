@@ -1,6 +1,6 @@
-﻿using BookingSystemProject.Models;
+﻿using BookingSystemProject.Domain.Entities;
 
-namespace BookingSystemProject.Services;
+namespace BookingSystemProject.Application.Interfaces;
 
 public interface IBookingService
 {
