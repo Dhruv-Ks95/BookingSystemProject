@@ -27,7 +27,6 @@ internal class Program
         seatService = new SeatService(seatRepository);
 
 
-
         for (int i = 1; i < 11; i++) // Add seats to the repository using the service 
         {
             seatService.AddASeat(seatService.CreateASeat(i));
@@ -67,7 +66,7 @@ internal class Program
                     menuMethods.UserMenu(user);
                     break;
                 case "2":
-                    menuMethods.AdminMenu(admin, employeeService.GetAllEmployees());
+                    menuMethods.AdminMenu(admin);
                     break;
                 case "3":
                     exitProgram = true;

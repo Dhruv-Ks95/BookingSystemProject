@@ -53,7 +53,7 @@ public class MenuMethods
         return;
     }
 
-    public void AdminMenu(Employee admin, List<Employee> employees)
+    public void AdminMenu(Employee admin)
     {
         bool hasLoggedOut = false;
         while (!hasLoggedOut)
