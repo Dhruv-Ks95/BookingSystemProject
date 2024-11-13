@@ -1,10 +1,10 @@
-﻿using BookingSystemProject.Application.Interfaces;
-using BookingSystemProject.Application.Services;
-using BookingSystemProject.Domain.Entities;
-using BookingSystemProject.Domain.Interfaces;
-using BookingSystemProject.Domain.Repositories;
+﻿using Agdata.SeatBookingSystem.Application.Interfaces;
+using Agdata.SeatBookingSystem.Application.Services;
+using Agdata.SeatBookingSystem.Domain.Entities;
+using Agdata.SeatBookingSystem.Domain.Interfaces;
+using Agdata.SeatBookingSystem.Domain.Repositories;
 
-namespace BookingSystemProject.Presentation.ConsoleApp;
+namespace Agdata.SeatBookingSystem.Presentation.ConsoleApp;
 
 internal class Program
 {
@@ -22,9 +22,9 @@ internal class Program
         IBookingRepository bookingRepository = new BookingRepository();
         IValidationService validationService = new ValidationService();
 
-        bookingService = new BookingService(bookingRepository, seatRepository);
         employeeService = new EmployeeService(employeeRepository);
         seatService = new SeatService(seatRepository);
+        bookingService = new BookingService(bookingRepository, seatRepository,employeeService);
 
 
         for (int i = 1; i < 11; i++) // Add seats to the repository using the service 
@@ -63,10 +63,10 @@ internal class Program
             switch (choice)
             {
                 case "1":
-                    menuMethods.UserMenu(user);
+                    menuMethods.UserMenu(user.EmployeeId);
                     break;
                 case "2":
-                    menuMethods.AdminMenu(admin);
+                    menuMethods.AdminMenu(admin.EmployeeId);
                     break;
                 case "3":
                     exitProgram = true;

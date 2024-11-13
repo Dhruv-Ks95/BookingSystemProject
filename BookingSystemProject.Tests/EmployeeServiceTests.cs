@@ -1,9 +1,9 @@
 ﻿using FluentAssertions;
-using BookingSystemProject.Application.Services;
-using BookingSystemProject.Domain.Entities;
-using BookingSystemProject.Domain.Repositories;
+using Agdata.SeatBookingSystem.Application.Services;
+using Agdata.SeatBookingSystem.Domain.Entities;
+using Agdata.SeatBookingSystem.Domain.Repositories;
 
-namespace BookingSystemProject.Tests;
+namespace Agdata.SeatBookingSystem.Tests;
 public class EmployeeServiceTests
 {
     private EmployeeService _employeeService;

@@ -1,7 +1,6 @@
-﻿using BookingSystemProject.Domain.Entities;
-using BookingSystemProject.Domain.Interfaces;
-using System.Runtime.Serialization;
-namespace BookingSystemProject.Domain.Repositories;
+﻿using Agdata.SeatBookingSystem.Domain.Entities;
+using Agdata.SeatBookingSystem.Domain.Interfaces;
+namespace Agdata.SeatBookingSystem.Domain.Repositories;
 
 public class SeatRepository : ISeatRepository
 {
@@ -32,12 +31,8 @@ public class SeatRepository : ISeatRepository
         return _seatList.Find(s => s.SeatId == seatid);
     }
 
-    public List<Seat> GetAllSeats()
+    public IEnumerable<Seat> GetAllSeats()
     {
         return _seatList;
     }
-
-
-
-
 }

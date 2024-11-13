@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BookingSystemProject.Domain.Entities
+﻿namespace Agdata.SeatBookingSystem.Domain.Entities
 {
     public class Booking
     {
@@ -12,7 +6,7 @@ namespace BookingSystemProject.Domain.Entities
 
         public int BookingId { get; set; }
         public int UserId { get; set; }
-        public int SeatNumber { get; set; }
+        public int SeatNumber { get; set; } // seat id too maybe
         public DateTime BookingDate { get; set; }
 
         public Booking(int userId, int seatNumber, DateTime bookingDate)

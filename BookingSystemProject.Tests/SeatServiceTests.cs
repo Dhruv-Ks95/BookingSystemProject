@@ -1,9 +1,9 @@
-﻿using BookingSystemProject.Application.Services;
-using BookingSystemProject.Domain.Entities;
-using BookingSystemProject.Domain.Repositories;
+﻿using Agdata.SeatBookingSystem.Application.Services;
+using Agdata.SeatBookingSystem.Domain.Entities;
+using Agdata.SeatBookingSystem.Domain.Repositories;
 using FluentAssertions;
 
-namespace BookingSystemProject.Tests;
+namespace Agdata.SeatBookingSystem.Tests;
 
 public class SeatServiceTests
 {
@@ -94,8 +94,8 @@ public class SeatServiceTests
 
         var result = _seatService.UpdateSeat(seat.SeatId, newSeatNumber, newSeatStatus);
 
-        result.Should().BeTrue(); 
+        result.Should().BeTrue();
         seat.SeatNumber.Should().Be(newSeatNumber);
-        seat.IsBooked.Should().Be(newSeatStatus); 
+        seat.IsBooked.Should().Be(newSeatStatus);
     }
 }

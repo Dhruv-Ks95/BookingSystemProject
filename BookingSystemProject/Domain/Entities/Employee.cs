@@ -1,14 +1,8 @@
-﻿namespace BookingSystemProject.Domain.Entities;
-
-public enum RoleType
-{
-    User,
-    Admin
-}
+﻿namespace Agdata.SeatBookingSystem.Domain.Entities;
 
 public class Employee
 {
-    private static int nextId = 1;
+    private static int nextId = 1; // think DB and how to adjust then? two people simultaneously creating emps
     public int EmployeeId { get; private set; }
     public string Name { get; set; }
     public string Email { get; set; }

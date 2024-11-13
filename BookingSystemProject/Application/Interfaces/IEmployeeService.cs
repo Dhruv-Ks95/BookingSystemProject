@@ -1,14 +1,14 @@
-﻿using BookingSystemProject.Domain.Entities;
+﻿using Agdata.SeatBookingSystem.Domain.Entities;
 
-namespace BookingSystemProject.Application.Interfaces;
+namespace Agdata.SeatBookingSystem.Application.Interfaces;
 
 public interface IEmployeeService
 {
     Employee CreateAnEmployee(string name, string email, RoleType role);
     Employee GetEmployeeByEmployeeId(int id);
-    List<Employee> GetAllEmployees();
-    void AddAnEmployee(Employee employee);
+    IEnumerable<Employee> GetAllEmployees();
+    int AddAnEmployee(Employee employee);
     bool UpdateAnEmployee(int id, string newName, string newEmail, RoleType newRole);
-    void RemoveAnEmployee(Employee employee);
+    bool RemoveAnEmployee(int empId);
 
 }

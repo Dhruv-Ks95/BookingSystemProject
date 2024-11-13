@@ -1,7 +1,7 @@
-﻿using BookingSystemProject.Application.Services;
-using BookingSystemProject.Domain.Entities;
+﻿using Agdata.SeatBookingSystem.Application.Services;
+using Agdata.SeatBookingSystem.Domain.Entities;
 using FluentAssertions;
-namespace BookingSystemProject.Tests;
+namespace Agdata.SeatBookingSystem.Tests;
 public class ValidationServiceTests
 {
     private ValidationService _validationService;
@@ -12,7 +12,7 @@ public class ValidationServiceTests
     }
 
     [Theory]
-    [InlineData("2024-11-05", true)]
+    [InlineData("2024-11-24", true)]
     [InlineData("2024-10-01", false)]
     [InlineData("2025-01-01", false)]
     [InlineData("invalid-date", false)]

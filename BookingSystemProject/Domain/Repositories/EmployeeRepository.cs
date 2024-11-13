@@ -1,7 +1,7 @@
-﻿using BookingSystemProject.Domain.Entities;
-using BookingSystemProject.Domain.Interfaces;
+﻿using Agdata.SeatBookingSystem.Domain.Entities;
+using Agdata.SeatBookingSystem.Domain.Interfaces;
 
-namespace BookingSystemProject.Domain.Repositories;
+namespace Agdata.SeatBookingSystem.Domain.Repositories;
 
 public class EmployeeRepository : IEmployeeRepository
 {
@@ -25,7 +25,7 @@ public class EmployeeRepository : IEmployeeRepository
         return _employees.Find(e => e.EmployeeId == employeeId);
     }
 
-    public List<Employee> GetAllEmployees()
+    public IEnumerable<Employee> GetAllEmployees()
     {
         return _employees;
     }

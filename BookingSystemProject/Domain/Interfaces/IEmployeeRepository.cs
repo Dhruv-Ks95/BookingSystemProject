@@ -1,11 +1,11 @@
-﻿using BookingSystemProject.Domain.Entities;
+﻿using Agdata.SeatBookingSystem.Domain.Entities;
 
-namespace BookingSystemProject.Domain.Interfaces;
+namespace Agdata.SeatBookingSystem.Domain.Interfaces;
 
 public interface IEmployeeRepository
 {
-    void AddEmployee(Employee employee);
-    void RemoveEmployee(int employeeId);
+    void AddEmployee(Employee employee); // return ID
+    void RemoveEmployee(int employeeId); // return boolean
     Employee GetEmployeeById(int employeeId);
-    List<Employee> GetAllEmployees();
+    IEnumerable<Employee> GetAllEmployees(); // change to Enums
 }

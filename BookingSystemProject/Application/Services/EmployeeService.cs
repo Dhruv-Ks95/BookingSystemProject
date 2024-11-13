@@ -1,8 +1,8 @@
-﻿using BookingSystemProject.Application.Interfaces;
-using BookingSystemProject.Domain.Entities;
-using BookingSystemProject.Domain.Interfaces;
+﻿using Agdata.SeatBookingSystem.Application.Interfaces;
+using Agdata.SeatBookingSystem.Domain.Entities;
+using Agdata.SeatBookingSystem.Domain.Interfaces;
 
-namespace BookingSystemProject.Application.Services;
+namespace Agdata.SeatBookingSystem.Application.Services;
 
 public class EmployeeService : IEmployeeService
 {
@@ -23,14 +23,15 @@ public class EmployeeService : IEmployeeService
         return employeeRepository.GetEmployeeById(id); // Can be null
     }
 
-    public List<Employee> GetAllEmployees()
+    public IEnumerable<Employee> GetAllEmployees()
     {
         return employeeRepository.GetAllEmployees();
     }
 
-    public void AddAnEmployee(Employee employee)
+    public int AddAnEmployee(Employee employee)
     {
         employeeRepository.AddEmployee(employee);
+        return employee.EmployeeId;
     }
 
     public bool UpdateAnEmployee(int id, string newName, string newEmail, RoleType newRole)
@@ -46,8 +47,9 @@ public class EmployeeService : IEmployeeService
         return false;
     }
 
-    public void RemoveAnEmployee(Employee employee)
+    public bool RemoveAnEmployee(int empid)
     {
-        employeeRepository.RemoveEmployee(employee.EmployeeId);
+        employeeRepository.RemoveEmployee(empid);
+        return true;
     }
 }

@@ -1,21 +1,21 @@
-﻿using BookingSystemProject.Domain.Entities;
+﻿using Agdata.SeatBookingSystem.Domain.Entities;
 
-namespace BookingSystemProject.Application.Interfaces;
+namespace Agdata.SeatBookingSystem.Application.Interfaces;
 
 public interface IBookingService
 {
     // For user services 
-    bool BookSeat(Employee employee, DateTime bookingDate, int SeatNumber);
-    List<Booking> GetUserBookings(Employee employee);
-    bool CancelUserBookings(Employee employee, int bookingIdToDelete);
+    int BookSeat(int empId, DateTime bookingDate, int SeatNumber);
+    IEnumerable<Booking> GetUserBookings(int empId);
+    bool CancelUserBookings(int empId, int bookingIdToDelete); 
 
     // For admin services
-    bool BookSeatForEmployee(Employee admin, Employee employeeToBookFor, DateTime dateToBookOn, int seatToBook);
-    List<Booking> GetAllBookingsOnDate(Employee admin, DateTime dateToSearch);
-    void ModifyAnyBooking(Employee admin, DateTime dateToModifyBookingOn, int bookingId, int modifiedSeatNumber);
-    void CancelAnyBooking(Employee admin, int bookingId);
+    int BookSeatForEmployee(int adminId, int empId, DateTime dateToBookOn, int seatToBook); 
+    IEnumerable<Booking> GetAllBookingsOnDate(int adminId, DateTime dateToSearch);
+    int ModifyAnyBooking(int adminId, DateTime dateToModifyBookingOn, int bookingId, int modifiedSeatNumber); // return id
+    bool CancelAnyBooking(int adminId, int bookingId); // return bool
 
     // Additional Service
-    List<Seat> GetSeatsOnGivenDay(DateTime givenDate);
+    IEnumerable<Seat> GetSeatsOnGivenDay(DateTime givenDate);
 
 }

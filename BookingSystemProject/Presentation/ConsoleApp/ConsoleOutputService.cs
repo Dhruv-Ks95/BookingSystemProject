@@ -1,6 +1,6 @@
-﻿using BookingSystemProject.Domain.Entities;
+﻿using Agdata.SeatBookingSystem.Domain.Entities;
 
-namespace BookingSystemProject.Presentation.ConsoleApp;
+namespace Agdata.SeatBookingSystem.Presentation.ConsoleApp;
 
 public class ConsoleOutputService
 {
@@ -33,7 +33,7 @@ public class ConsoleOutputService
         Console.ResetColor();
     }
 
-    public void PrintSeats(List<Seat> seats)
+    public void PrintSeats(IEnumerable<Seat> seats)
     {
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine("Available seats:");
@@ -44,7 +44,7 @@ public class ConsoleOutputService
         Console.ResetColor();
     }
 
-    public void PrintBookings(List<Booking> bookings)
+    public void PrintBookings(IEnumerable<Booking> bookings)
     {
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine("Bookings: ");
@@ -56,7 +56,7 @@ public class ConsoleOutputService
         }
     }
 
-    public void PrintEmployees(List<Employee> employees)
+    public void PrintEmployees(IEnumerable<Employee> employees)
     {
         Console.WriteLine("List of employees :");
         foreach (var employee in employees)

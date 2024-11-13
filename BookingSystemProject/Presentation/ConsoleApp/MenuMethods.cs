@@ -1,8 +1,8 @@
-﻿using BookingSystemProject.Application.Interfaces;
-using BookingSystemProject.Domain.Entities;
+﻿using Agdata.SeatBookingSystem.Application.Interfaces;
+using Agdata.SeatBookingSystem.Domain.Entities;
 using System.Reflection.Metadata;
 
-namespace BookingSystemProject.Presentation.ConsoleApp;
+namespace Agdata.SeatBookingSystem.Presentation.ConsoleApp;
 public class MenuMethods
 {
     private IBookingService bookingService;
@@ -17,9 +17,10 @@ public class MenuMethods
     }
 
     // DASHBOARDS
-    public void UserMenu(Employee employee)
+    public void UserMenu(int empId)
     {
         bool hasLoggedOut = false;
+        Employee employee = employeeService.GetEmployeeByEmployeeId(empId);
         while (!hasLoggedOut)
         {
             Console.WriteLine($"\n Hello, {employee.Name}! What would you like to do?");
@@ -33,13 +34,13 @@ public class MenuMethods
             switch (choice)
             {
                 case "1":
-                    BookSeat(employee);
+                    BookSeat(empId);
                     break;
                 case "2":
-                    ViewUserBookings(employee);
+                    ViewUserBookings(empId);
                     break;
                 case "3":
-                    CancelUserBooking(employee);
+                    CancelUserBooking(empId);
                     break;
                 case "4":
                     Console.WriteLine("Logging out.");
@@ -53,9 +54,10 @@ public class MenuMethods
         return;
     }
 
-    public void AdminMenu(Employee admin)
+    public void AdminMenu(int adminId)
     {
         bool hasLoggedOut = false;
+        Employee admin = employeeService.GetEmployeeByEmployeeId(adminId);
         while (!hasLoggedOut)
         {
             Console.WriteLine($"\nHello, {admin.Name}! What would you like to do?");
@@ -70,16 +72,16 @@ public class MenuMethods
             switch (choice)
             {
                 case "1":
-                    BookSeatForEmployee(admin); // Now uses Employee
+                    BookSeatForEmployee(adminId); // Now uses Employee
                     break;
                 case "2":
-                    ViewAllBookings(admin);
+                    ViewAllBookings(adminId);
                     break;
                 case "3":
-                    ModifyBooking(admin);
+                    ModifyBooking(adminId);
                     break;
                 case "4":
-                    DeleteBooking(admin);
+                    DeleteBooking(adminId);
                     break;
                 case "5":
                     Console.WriteLine("Logging out.");
@@ -93,7 +95,7 @@ public class MenuMethods
         }
     }
     // USER FUNCTIONS -> add colors in bookseat
-    private void BookSeat(Employee employee)
+    private void BookSeat(int empId)
     {
         Console.Write("Enter the date for booking (yyyy-MM-dd): ");
         string bookingDate = Console.ReadLine();
@@ -103,7 +105,7 @@ public class MenuMethods
             return;
         }
         DateTime.TryParse(bookingDate, out DateTime bookingDay);
-        List<Seat> availableSeats = bookingService.GetSeatsOnGivenDay(bookingDay);
+        IEnumerable<Seat> availableSeats = bookingService.GetSeatsOnGivenDay(bookingDay);
         if (validationService.IsEmptyList(availableSeats))
         {
             consoleOutputService.PrintError("No Seats available on Choosen Day");
@@ -118,21 +120,14 @@ public class MenuMethods
             return;
         }
         int.TryParse(selectedSeatNumber, out int seatNumber);
-        if (bookingService.BookSeat(employee, bookingDay, seatNumber))
-        {
-            consoleOutputService.PrintSuccess("Seat booked Successfully!");
-            return;
-        }
-        else
-        {
-            consoleOutputService.PrintError("Seat could not be booked!");
-        }
+        int bknid = bookingService.BookSeat(empId, bookingDay, seatNumber);
+        consoleOutputService.PrintSuccess("Booking successful with ID : " + bknid);
         return;
     }
 
-    public void ViewUserBookings(Employee employee)
+    public void ViewUserBookings(int empId)
     {
-        List<Booking> userBookings = bookingService.GetUserBookings(employee);
+        IEnumerable<Booking> userBookings = bookingService.GetUserBookings(empId);
 
         if (validationService.IsEmptyList(userBookings))
         {
@@ -142,9 +137,9 @@ public class MenuMethods
         consoleOutputService.PrintBookings(userBookings);
     }
 
-    public void CancelUserBooking(Employee employee)
+    public void CancelUserBooking(int empId)
     {
-        List<Booking> userBookings = bookingService.GetUserBookings(employee);
+        IEnumerable<Booking> userBookings = bookingService.GetUserBookings(empId);
 
         if (validationService.IsEmptyList(userBookings))
         {
@@ -163,7 +158,7 @@ public class MenuMethods
         }
         int.TryParse(bookinId, out int bookingId);
 
-        if (bookingService.CancelUserBookings(employee, bookingId))
+        if (bookingService.CancelUserBookings(empId, bookingId))
         {
             consoleOutputService.PrintSuccess("Booking cancelled successfully!");
         }
@@ -176,7 +171,7 @@ public class MenuMethods
     }
 
     // ADMIN FUNCTIONS
-    public void BookSeatForEmployee(Employee admin)
+    public void BookSeatForEmployee(int adminId)
     {
         Console.Write("\nEnter the date for booking (yyyy-MM-dd): ");
         string dateToBookOn = Console.ReadLine();
@@ -186,7 +181,7 @@ public class MenuMethods
             return;
         }
         DateTime.TryParse(dateToBookOn, out DateTime bookingDate);
-        List<Seat> availableSeats = bookingService.GetSeatsOnGivenDay(bookingDate);
+        IEnumerable<Seat> availableSeats = bookingService.GetSeatsOnGivenDay(bookingDate);
         if (validationService.IsEmptyList(availableSeats))
         {
             consoleOutputService.PrintWarning("All seats booked on selected Date!");
@@ -201,7 +196,7 @@ public class MenuMethods
             return;
         }
         int.TryParse(selectedSeatNumber, out int seatNumber);
-        List<Employee> employees = employeeService.GetAllEmployees();
+        IEnumerable<Employee> employees = employeeService.GetAllEmployees();
         consoleOutputService.PrintEmployees(employees);
         Console.WriteLine("Select User by thier Employee ID: ");
         string userToBeSelected = Console.ReadLine();
@@ -211,19 +206,13 @@ public class MenuMethods
             return;
         }
         int.TryParse(userToBeSelected, out int userId);
-        Employee userToBookFor = employeeService.GetEmployeeByEmployeeId(userId);
-        if (bookingService.BookSeatForEmployee(admin, userToBookFor, bookingDate, seatNumber))
-        {
-            consoleOutputService.PrintSuccess("Booking Successful!");
-        }
-        else
-        {
-            consoleOutputService.PrintError("Unable To book!");
-        }
+        int bknid = bookingService.BookSeatForEmployee(adminId, userId, bookingDate, seatNumber);        
+        consoleOutputService.PrintSuccess("Booking successful with ID : " + bknid);
+        return;
 
     }
 
-    public void ModifyBooking(Employee admin)
+    public void ModifyBooking(int adminId)
     {
         Console.Write("Enter the date of the booking to modify (yyyy-MM-dd): ");
         string dateToSearch = Console.ReadLine();
@@ -233,7 +222,7 @@ public class MenuMethods
             return;
         }
         DateTime.TryParse(dateToSearch, out DateTime bookingDate);
-        List<Booking> bookingsOnSelectedDate = bookingService.GetAllBookingsOnDate(admin, bookingDate);
+        IEnumerable<Booking> bookingsOnSelectedDate = bookingService.GetAllBookingsOnDate(adminId, bookingDate);
         if (validationService.IsEmptyList(bookingsOnSelectedDate))
         {
             consoleOutputService.PrintError("No Bookings on selected Date!");
@@ -248,7 +237,7 @@ public class MenuMethods
             return;
         }
         int.TryParse(bookingIdSelected, out int bookingId);
-        List<Seat> availableSeats = bookingService.GetSeatsOnGivenDay(bookingDate);
+        IEnumerable<Seat> availableSeats = bookingService.GetSeatsOnGivenDay(bookingDate);
         if (validationService.IsEmptyList(availableSeats))
         {
             consoleOutputService.PrintError("No seats available to choose!");
@@ -263,11 +252,11 @@ public class MenuMethods
             return;
         }
         int.TryParse(selectedSeatNumber, out int seatNumber);
-        bookingService.ModifyAnyBooking(admin, bookingDate, bookingId, seatNumber);
+        bookingService.ModifyAnyBooking(adminId, bookingDate, bookingId, seatNumber);
         consoleOutputService.PrintSuccess("Booking modified Successfully!");
     }
 
-    public void ViewAllBookings(Employee admin)
+    public void ViewAllBookings(int adminId)
     {
         Console.Write("Enter the date to view bookings (yyyy-MM-dd): ");
         string bookingDateToSearch = Console.ReadLine();
@@ -276,8 +265,8 @@ public class MenuMethods
             consoleOutputService.PrintError("Invalid Date!");
             return;
         }
-        DateTime.TryParse(bookingDateToSearch, out DateTime bookingDate);
-        List<Booking> bookingsOnDate = bookingService.GetAllBookingsOnDate(admin, bookingDate);
+        DateTime bookingDate = DateTime.Parse(bookingDateToSearch);
+        IEnumerable<Booking> bookingsOnDate = bookingService.GetAllBookingsOnDate(adminId, bookingDate);
         if (validationService.IsEmptyList(bookingsOnDate))
         {
             consoleOutputService.PrintWarning("No Bookings on Selected Date!");
@@ -287,7 +276,7 @@ public class MenuMethods
 
     }
 
-    public void DeleteBooking(Employee admin)
+    public void DeleteBooking(int adminId)
     {
         Console.Write("Enter the date of the booking to delete (yyyy-MM-dd): ");
         string dateToSearch = Console.ReadLine();
@@ -297,7 +286,7 @@ public class MenuMethods
             return;
         }
         DateTime.TryParse(dateToSearch, out DateTime bookingDate);
-        List<Booking> bookingsOnDate = bookingService.GetAllBookingsOnDate(admin, bookingDate);
+        IEnumerable<Booking> bookingsOnDate = bookingService.GetAllBookingsOnDate(adminId, bookingDate);
         if (validationService.IsEmptyList(bookingsOnDate))
         {
             consoleOutputService.PrintError("No Bookings on selected Date!");
@@ -314,8 +303,14 @@ public class MenuMethods
         int.TryParse(bookingIdToSelect, out int bookingId);
         try
         {
-            bookingService.CancelAnyBooking(admin, bookingId);
-            consoleOutputService.PrintSuccess("Booking Cancelled Successfully!");
+            if (bookingService.CancelAnyBooking(adminId, bookingId))
+            {
+                consoleOutputService.PrintSuccess("Booking Cancelled Successfully!");
+            }
+            else
+            {
+                consoleOutputService.PrintError("Booking cancellation Unsuccessful!");
+            }
         }
         catch (Exception ex)
         {

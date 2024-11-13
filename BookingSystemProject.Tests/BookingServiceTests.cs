@@ -1,9 +1,9 @@
-using BookingSystemProject.Application.Services;
-using BookingSystemProject.Domain.Entities;
-using BookingSystemProject.Domain.Repositories;
+using Agdata.SeatBookingSystem.Application.Services;
+using Agdata.SeatBookingSystem.Domain.Entities;
+using Agdata.SeatBookingSystem.Domain.Repositories;
 using FluentAssertions;
 
-namespace BookingSystemProject.Tests;
+namespace Agdata.SeatBookingSystem.Tests;
 
 public class BookingServiceTests
 {
@@ -47,7 +47,7 @@ public class BookingServiceTests
 
         _seatRepository.AddSeat(new Seat(seatNumber));
 
-        Action act = () => _bookingService.BookSeatForEmployee(admin,user, dateTime, seatNumber);
+        Action act = () => _bookingService.BookSeatForEmployee(admin, user, dateTime, seatNumber);
 
         act.Should().Throw<Exception>().WithMessage("Invalid Date Duration!");
 
@@ -76,8 +76,8 @@ public class BookingServiceTests
         int seatNumber = 1;
 
         _seatRepository.AddSeat(new Seat(seatNumber));
-        
-        Action act = () => _bookingService.BookSeatForEmployee(frauduser,user, bookingDate, seatNumber);
+
+        Action act = () => _bookingService.BookSeatForEmployee(frauduser, user, bookingDate, seatNumber);
         act.Should().Throw<Exception>().WithMessage("Unauthorized access to Admin feature!");
     }
 
@@ -90,10 +90,10 @@ public class BookingServiceTests
         int seatNumber = 99;
         _seatRepository.AddSeat(new Seat(1));
 
-        Action act = () => _bookingService.BookSeatForEmployee(admin,user, dateTime, seatNumber);
+        Action act = () => _bookingService.BookSeatForEmployee(admin, user, dateTime, seatNumber);
 
         act.Should().Throw<Exception>().WithMessage("Invalid Seat Number Provided");
-            
+
     }
 
     // Admin Viewing Bookings 
@@ -106,9 +106,9 @@ public class BookingServiceTests
         var bookingDate = DateTime.Today;
         _seatRepository.AddSeat(new Seat(1));
         _seatRepository.AddSeat(new Seat(2));
-        _bookingRepository.AddBooking(new Booking(user1.EmployeeId,1,bookingDate));
-        _bookingRepository.AddBooking(new Booking(user2.EmployeeId,2,bookingDate));
-        
+        _bookingRepository.AddBooking(new Booking(user1.EmployeeId, 1, bookingDate));
+        _bookingRepository.AddBooking(new Booking(user2.EmployeeId, 2, bookingDate));
+
         var result = _bookingService.GetAllBookingsOnDate(admin, bookingDate);
 
         result.Should().HaveCount(2);
@@ -135,7 +135,7 @@ public class BookingServiceTests
 
         var result = _bookingService.GetAllBookingsOnDate(admin, pastDate);
 
-        result.Should().BeEmpty(); 
+        result.Should().BeEmpty();
     }
 
 
@@ -150,20 +150,20 @@ public class BookingServiceTests
         _seatRepository.AddSeat(new Seat(1));
         _seatRepository.AddSeat(new Seat(2));
 
-        var booking = new Booking(user.EmployeeId,seatNumber,bookingDate);
+        var booking = new Booking(user.EmployeeId, seatNumber, bookingDate);
         _bookingRepository.AddBooking(booking);
 
-        _bookingService.ModifyAnyBooking(admin, bookingDate, booking.BookingId, 2); 
-        
+        _bookingService.ModifyAnyBooking(admin, bookingDate, booking.BookingId, 2);
+
         var modifiedBooking = _bookingRepository.GetBookingById(booking.BookingId);
         modifiedBooking.Should().NotBeNull();
         modifiedBooking.SeatNumber.Should().Be(2);
     }
-    
+
     [Fact]
     public void Admin_Should_Not_Modify_Non_Existent_Booking()
     {
-        
+
         Employee admin = new Employee("Admin", "admin@company.com", RoleType.Admin);
         DateTime bookingDate = DateTime.Today;
         int invalidBookingId = 9;
@@ -182,7 +182,7 @@ public class BookingServiceTests
         int seatNumber = 1;
         Employee user = new Employee("User1", "user1@company.com", RoleType.User);
         _seatRepository.AddSeat(new Seat(1));
-        _seatRepository.AddSeat(new Seat(2));        
+        _seatRepository.AddSeat(new Seat(2));
 
         Booking booking = new Booking(user.EmployeeId, seatNumber, bookingDate);
         _bookingRepository.AddBooking(booking);
@@ -199,7 +199,7 @@ public class BookingServiceTests
         int seatNumber = 1;
         Employee user = new Employee("User1", "user1@company.com", RoleType.User);
 
-        var booking = new Booking(user.EmployeeId,seatNumber, pastDate);
+        var booking = new Booking(user.EmployeeId, seatNumber, pastDate);
         _bookingRepository.AddBooking(booking);
 
         Action act = () => _bookingService.ModifyAnyBooking(admin, pastDate, booking.BookingId, 2);
@@ -217,7 +217,7 @@ public class BookingServiceTests
         DateTime bookingDate = DateTime.Today;
         int seatNumber = 1;
 
-        var booking = new Booking(user.EmployeeId,seatNumber, bookingDate);
+        var booking = new Booking(user.EmployeeId, seatNumber, bookingDate);
         _bookingRepository.AddBooking(booking);
 
         _bookingService.CancelAnyBooking(admin, booking.BookingId);
@@ -240,11 +240,11 @@ public class BookingServiceTests
     [Fact]
     public void Non_Admin_Should_Not_Cancel_Booking()
     {
-        Employee user = new Employee("frauduser","user@company.com",RoleType.User);
+        Employee user = new Employee("frauduser", "user@company.com", RoleType.User);
         DateTime bookingDate = DateTime.Today;
         int seatNumber = 1;
 
-        Booking booking = new Booking(user.EmployeeId,seatNumber, bookingDate);
+        Booking booking = new Booking(user.EmployeeId, seatNumber, bookingDate);
         _bookingRepository.AddBooking(booking);
 
         Action act = () => _bookingService.CancelAnyBooking(user, booking.BookingId);
@@ -261,10 +261,10 @@ public class BookingServiceTests
 
         for (int i = 1; i <= 10; i++)
         {
-            _bookingRepository.AddBooking(new Booking(user.EmployeeId,i,bookingDate));
+            _bookingRepository.AddBooking(new Booking(user.EmployeeId, i, bookingDate));
         }
 
-        Action act =() =>  _bookingService.BookSeat(user, bookingDate, 11);
+        Action act = () => _bookingService.BookSeat(user, bookingDate, 11);
 
         act.Should().Throw<Exception>().WithMessage("No seats available on provided Day!");
     }
@@ -313,7 +313,7 @@ public class BookingServiceTests
         _seatRepository.AddSeat(new Seat(2));
         _seatRepository.AddSeat(new Seat(3));
         Booking booking1 = new Booking(user.EmployeeId, 1, DateTime.Today);
-        Booking booking2 = new Booking(user.EmployeeId,2, DateTime.Today);
+        Booking booking2 = new Booking(user.EmployeeId, 2, DateTime.Today);
 
         _bookingRepository.AddBooking(booking1);
         _bookingRepository.AddBooking(booking2);
@@ -361,17 +361,17 @@ public class BookingServiceTests
 
         var result = _bookingService.CancelUserBookings(user, booking.BookingId);
 
-        
-        result.Should().BeTrue(); 
-        _bookingRepository.GetAllBookings().Should().NotContain(booking); 
+
+        result.Should().BeTrue();
+        _bookingRepository.GetAllBookings().Should().NotContain(booking);
     }
 
     [Fact]
     public void CancelUserBookings_Should_Return_False_For_Invalid_BookingId()
     {
         Employee user = new Employee("User1", "user1@company.com", RoleType.User);
-        Booking booking = new Booking(user.EmployeeId,1, DateTime.Today);
-        
+        Booking booking = new Booking(user.EmployeeId, 1, DateTime.Today);
+
         _bookingRepository.AddBooking(booking);
 
         int invalidBookingId = 999;
@@ -380,6 +380,6 @@ public class BookingServiceTests
 
         result.Should().BeFalse();
         _bookingRepository.GetAllBookings().Should().Contain(booking);
-    }    
+    }
 
 }

@@ -1,7 +1,7 @@
-﻿using BookingSystemProject.Application.Interfaces;
-using BookingSystemProject.Domain.Entities;
+﻿using Agdata.SeatBookingSystem.Application.Interfaces;
+using Agdata.SeatBookingSystem.Domain.Entities;
 
-namespace BookingSystemProject.Application.Services;
+namespace Agdata.SeatBookingSystem.Application.Services;
 
 public class ValidationService : IValidationService
 {
@@ -18,14 +18,14 @@ public class ValidationService : IValidationService
         return false;
     }
 
-    public bool IsEmptyList<T>(List<T> list)
+    public bool IsEmptyList<T>(IEnumerable<T> lst)
     {
-        if (list == null || list.Count == 0) return true;
+        if (lst == null || lst.Count() == 0) return true;
 
         return false;
     }
 
-    public bool IsValidSeatNumber(string seatNumber, List<Seat> seats)
+    public bool IsValidSeatNumber(string seatNumber, IEnumerable<Seat> seats)
     {
         if (int.TryParse(seatNumber, out int seatNum))
         {
@@ -40,7 +40,7 @@ public class ValidationService : IValidationService
         return false;
     }
 
-    public bool IsValidBookingId(string bookingId, List<Booking> bookings)
+    public bool IsValidBookingId(string bookingId, IEnumerable<Booking> bookings)
     {
         if (int.TryParse(bookingId, out int id))
         {
@@ -56,7 +56,7 @@ public class ValidationService : IValidationService
         return false;
     }
 
-    public bool IsValidUser(string user, List<Employee> employees)
+    public bool IsValidUser(string user, IEnumerable<Employee> employees)
     {
         if (int.TryParse(user, out int id))
         {

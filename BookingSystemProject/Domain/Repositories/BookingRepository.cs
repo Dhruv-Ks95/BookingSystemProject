@@ -1,11 +1,11 @@
-﻿using BookingSystemProject.Domain.Entities;
-using BookingSystemProject.Domain.Interfaces;
+﻿using Agdata.SeatBookingSystem.Domain.Entities;
+using Agdata.SeatBookingSystem.Domain.Interfaces;
 
-namespace BookingSystemProject.Domain.Repositories;
+namespace Agdata.SeatBookingSystem.Domain.Repositories;
 
 public class BookingRepository : IBookingRepository
 {
-    private List<Booking> _bookings;
+    private List<Booking> _bookings; // For storing the bookings Data 
 
     public BookingRepository()
     {
@@ -19,7 +19,7 @@ public class BookingRepository : IBookingRepository
 
     public void RemoveBooking(int bookingId)
     {
-        _bookings.RemoveAll(b => b.BookingId == bookingId);
+        _bookings.RemoveAll(b => b.BookingId == bookingId); // RemoveAll to remove
     }
 
     public Booking GetBookingById(int bookingId)
@@ -27,7 +27,7 @@ public class BookingRepository : IBookingRepository
         return _bookings.Find(b => b.BookingId == bookingId);
     }
 
-    public List<Booking> GetAllBookings()
+    public IEnumerable<Booking> GetAllBookings()
     {
         return _bookings;
     }

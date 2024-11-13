@@ -1,12 +1,12 @@
-﻿using BookingSystemProject.Domain.Entities;
+﻿using Agdata.SeatBookingSystem.Domain.Entities;
 
-namespace BookingSystemProject.Domain.Interfaces;
+namespace Agdata.SeatBookingSystem.Domain.Interfaces;
 
 public interface ISeatRepository
 {
-    void AddSeat(Seat seat);
-    void RemoveSeat(int seatNumber);
+    void AddSeat(Seat seat); // return seat id
+    void RemoveSeat(int seatNumber); // return boolean
     Seat GetSeatById(int seatId);
-    List<Seat> GetAllSeats();
-    Seat GetSeatByNumber(int seatNumber);
+    IEnumerable<Seat> GetAllSeats();
+    Seat GetSeatByNumber(int seatNumber); // no need
 }

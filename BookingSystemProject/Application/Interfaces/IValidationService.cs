@@ -1,17 +1,17 @@
-﻿using BookingSystemProject.Domain.Entities;
+﻿using Agdata.SeatBookingSystem.Domain.Entities;
 
-namespace BookingSystemProject.Application.Interfaces;
+namespace Agdata.SeatBookingSystem.Application.Interfaces;
 
 public interface IValidationService
 {
     bool IsValidDate(string enteredDate);
 
-    bool IsEmptyList<T>(List<T> list);
+    bool IsEmptyList<T>(IEnumerable<T> list);
 
-    bool IsValidSeatNumber(string seatNumber, List<Seat> seats);
+    bool IsValidSeatNumber(string seatNumber, IEnumerable<Seat> seats); // rather ID
 
-    bool IsValidBookingId(string bookingId, List<Booking> bookings);
+    bool IsValidBookingId(string bookingId, IEnumerable<Booking> bookings);
 
-    bool IsValidUser(string userId, List<Employee> employees);
+    bool IsValidUser(string userId, IEnumerable<Employee> employees);
 
 }

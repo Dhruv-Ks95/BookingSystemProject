@@ -1,8 +1,8 @@
-﻿using BookingSystemProject.Application.Interfaces;
-using BookingSystemProject.Domain.Entities;
-using BookingSystemProject.Domain.Interfaces;
+﻿using Agdata.SeatBookingSystem.Application.Interfaces;
+using Agdata.SeatBookingSystem.Domain.Entities;
+using Agdata.SeatBookingSystem.Domain.Interfaces;
 
-namespace BookingSystemProject.Application.Services;
+namespace Agdata.SeatBookingSystem.Application.Services;
 public class SeatService : ISeatService
 {
     private ISeatRepository seatRepository;
@@ -16,19 +16,21 @@ public class SeatService : ISeatService
     {
         return new Seat(seatNumber);
     }
-    public void AddASeat(Seat seat)
+    public int AddASeat(Seat seat)
     {
         seatRepository.AddSeat(seat);
+        return seat.SeatId;
     }
     public Seat GetSeatBySeatId(int seatId)
     {
         return seatRepository.GetSeatById(seatId);
     }
-    public void RemoveASeat(int seatId)
+    public bool RemoveASeat(int seatId)
     {
         seatRepository.RemoveSeat(seatId);
+        return true;
     }
-    public List<Seat> GetEverySeat()
+    public IEnumerable<Seat> GetEverySeat()
     {
         return seatRepository.GetAllSeats();
     }
