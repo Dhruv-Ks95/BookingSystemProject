@@ -11,19 +11,16 @@ public class SeatRepository : ISeatRepository
         _seatList = new List<Seat>();
     }
 
-    public void AddSeat(Seat seat)
+    public int AddSeat(Seat seat)
     {
         _seatList.Add(seat);
+        return seat.SeatId;
     }
 
-    public void RemoveSeat(int seatId)
+    public bool RemoveSeat(int seatId)
     {
         _seatList.RemoveAll(s => s.SeatId == seatId);
-    }
-
-    public Seat GetSeatByNumber(int seatNumber)
-    {
-        return _seatList.Find(s => s.SeatNumber == seatNumber);
+        return true;
     }
 
     public Seat GetSeatById(int seatid)

@@ -4,9 +4,9 @@ namespace Agdata.SeatBookingSystem.Domain.Interfaces;
 
 public interface IBookingRepository
 {
-    void AddBooking(Booking booking); // return id
-    void RemoveBooking(int bookingId); // return bool
+    int AddBooking(Booking booking);
+    bool RemoveBooking(int bookingId);
     Booking GetBookingById(int bookingId);
-    IEnumerable<Booking> GetAllBookings(); // Ienumerable
+    IEnumerable<Booking> GetAllBookings(); 
 
 }

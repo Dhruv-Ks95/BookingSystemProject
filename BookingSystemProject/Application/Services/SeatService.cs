@@ -33,19 +33,13 @@ public class SeatService : ISeatService
     public IEnumerable<Seat> GetEverySeat()
     {
         return seatRepository.GetAllSeats();
-    }
-    public bool IsBooked(int seatId)
-    {
-        Seat st = seatRepository.GetSeatById(seatId);
-        return st.IsBooked;
-    }
-    public bool UpdateSeat(int seatid, int newSeatNumber, bool newSeatStatus)
+    }    
+    public bool UpdateSeat(int seatid, int newSeatNumber)
     {
         Seat st = seatRepository.GetSeatById(seatid);
         if (st != null)
         {
-            st.SeatNumber = newSeatNumber;
-            st.IsBooked = newSeatStatus;
+            st.SeatNumber = newSeatNumber;            
             return true;
         }
         return false;

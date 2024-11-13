@@ -4,8 +4,8 @@ namespace Agdata.SeatBookingSystem.Domain.Interfaces;
 
 public interface IEmployeeRepository
 {
-    void AddEmployee(Employee employee); // return ID
-    void RemoveEmployee(int employeeId); // return boolean
+    int AddEmployee(Employee employee);
+    bool RemoveEmployee(int employeeId); 
     Employee GetEmployeeById(int employeeId);
-    IEnumerable<Employee> GetAllEmployees(); // change to Enums
+    IEnumerable<Employee> GetAllEmployees();
 }

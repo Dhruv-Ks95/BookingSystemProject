@@ -12,14 +12,16 @@ public class BookingRepository : IBookingRepository
         _bookings = new List<Booking>();
     }
 
-    public void AddBooking(Booking booking)
+    public int AddBooking(Booking booking)
     {
         _bookings.Add(booking);
+        return booking.BookingId;
     }
 
-    public void RemoveBooking(int bookingId)
+    public bool RemoveBooking(int bookingId)
     {
         _bookings.RemoveAll(b => b.BookingId == bookingId); // RemoveAll to remove
+        return true;
     }
 
     public Booking GetBookingById(int bookingId)

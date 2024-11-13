@@ -7,15 +7,19 @@ namespace Agdata.SeatBookingSystem.Tests;
 
 public class BookingServiceTests
 {
-    private BookingService _bookingService;
     private SeatRepository _seatRepository;
     private BookingRepository _bookingRepository;
+    private EmployeeRepository _employeeRepository;
+    private BookingService _bookingService;
+    private EmployeeService _employeeService;
 
     public BookingServiceTests()
     {
         _bookingRepository = new BookingRepository();
         _seatRepository = new SeatRepository();
-        _bookingService = new BookingService(_bookingRepository, _seatRepository);
+        _employeeRepository = new EmployeeRepository();
+        _employeeService = new EmployeeService(_employeeRepository);
+        _bookingService = new BookingService(_bookingRepository, _seatRepository, _employeeService);
     }
 
     // Admin adding bookings 

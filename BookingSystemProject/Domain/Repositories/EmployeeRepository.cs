@@ -12,13 +12,15 @@ public class EmployeeRepository : IEmployeeRepository
         _employees = new List<Employee>();
     }
 
-    public void AddEmployee(Employee employee)
+    public int AddEmployee(Employee employee)
     {
         _employees.Add(employee);
+        return employee.EmployeeId;
     }
-    public void RemoveEmployee(int employeeId)
+    public bool RemoveEmployee(int employeeId)
     {
         _employees.RemoveAll(e => e.EmployeeId == employeeId);
+        return true;
     }
     public Employee GetEmployeeById(int employeeId)
     {
