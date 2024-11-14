@@ -18,15 +18,17 @@ public class BookingRepository : IBookingRepository
         return booking.BookingId;
     }
 
-    public bool RemoveBooking(int bookingId)
-    {
-        _bookings.RemoveAll(b => b.BookingId == bookingId); // RemoveAll to remove
-        return true;
-    }
 
     public Booking GetBookingById(int bookingId)
     {
         return _bookings.Find(b => b.BookingId == bookingId);
+    }
+
+    public bool RemoveBooking(int bookingId)
+    {
+        Booking bookingToDelete = GetBookingById(bookingId);
+        _bookings.Remove(bookingToDelete);
+        return true;
     }
 
     public IEnumerable<Booking> GetAllBookings()

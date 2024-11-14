@@ -1,6 +1,5 @@
 ﻿using Agdata.SeatBookingSystem.Application.Interfaces;
 using Agdata.SeatBookingSystem.Domain.Entities;
-using System.Reflection.Metadata;
 
 namespace Agdata.SeatBookingSystem.Presentation.ConsoleApp;
 public class MenuMethods

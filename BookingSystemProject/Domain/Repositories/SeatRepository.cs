@@ -17,15 +17,16 @@ public class SeatRepository : ISeatRepository
         return seat.SeatId;
     }
 
-    public bool RemoveSeat(int seatId)
-    {
-        _seatList.RemoveAll(s => s.SeatId == seatId);
-        return true;
-    }
-
     public Seat GetSeatById(int seatid)
     {
         return _seatList.Find(s => s.SeatId == seatid);
+    }
+
+    public bool RemoveSeat(int seatId)
+    {
+        Seat seatToRemove = GetSeatById(seatId);
+        _seatList.Remove(seatToRemove);
+        return true;
     }
 
     public IEnumerable<Seat> GetAllSeats()

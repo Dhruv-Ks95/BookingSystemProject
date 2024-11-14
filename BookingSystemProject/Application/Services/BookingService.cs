@@ -47,8 +47,8 @@ public class BookingService : IBookingService
 
         // Add the Selected Seat in Booking -> Mark as booked
         if (selectedSeat != null)
-        {
-            var booking = new Booking(employee.EmployeeId, selectedSeat.SeatNumber, bookingDate);
+        {            
+            var booking = new Booking(employee.EmployeeId, selectedSeat.SeatNumber, bookingDate, selectedSeat.SeatId);
             bookingRepo.AddBooking(booking);
             return booking.BookingId;
         }
@@ -65,7 +65,7 @@ public class BookingService : IBookingService
         {
             if (booking.UserId == employee.EmployeeId && booking.BookingDate >= DateTime.Today && booking.BookingDate <= DateTime.Today.AddDays(30))
             {
-                userBookings.Add(booking);
+                userBookings.Add(booking);                
             }
         }
         return userBookings;

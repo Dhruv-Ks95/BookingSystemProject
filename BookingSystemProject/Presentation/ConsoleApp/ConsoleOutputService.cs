@@ -51,7 +51,7 @@ public class ConsoleOutputService
         foreach (var booking in bookings)
         {
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"Booking ID: {booking.BookingId}, Seat Number: {booking.SeatNumber}, Date: {booking.BookingDate.ToShortDateString()}, UserId: {booking.UserId}");
+            Console.WriteLine($"Booking ID: {booking.BookingId}, Seat Number: {booking.SeatNumber}, Date: {booking.BookingDate.ToShortDateString()}, UserId: {booking.UserId}, SeatId : {booking.SeatId}");
             Console.ResetColor();
         }
     }

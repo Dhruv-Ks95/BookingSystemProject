@@ -17,14 +17,15 @@ public class EmployeeRepository : IEmployeeRepository
         _employees.Add(employee);
         return employee.EmployeeId;
     }
-    public bool RemoveEmployee(int employeeId)
-    {
-        _employees.RemoveAll(e => e.EmployeeId == employeeId);
-        return true;
-    }
     public Employee GetEmployeeById(int employeeId)
     {
         return _employees.Find(e => e.EmployeeId == employeeId);
+    }
+    public bool RemoveEmployee(int employeeId)
+    {
+        Employee empToDelete = GetEmployeeById(employeeId);
+        _employees.Remove(empToDelete);
+        return true;
     }
 
     public IEnumerable<Employee> GetAllEmployees()
