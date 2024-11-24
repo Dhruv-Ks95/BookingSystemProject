@@ -48,7 +48,7 @@ public class BookingService : IBookingService
         // Add the Selected Seat in Booking -> Mark as booked
         if (selectedSeat != null)
         {            
-            var booking = new Booking(employee.EmployeeId, selectedSeat.SeatNumber, bookingDate, selectedSeat.SeatId);
+            var booking = new Booking(employee.EmployeeId, bookingDate, selectedSeat.SeatId);
             bookingRepo.AddBooking(booking);
             return booking.BookingId;
         }
@@ -160,10 +160,12 @@ public class BookingService : IBookingService
 
         // make sure selected seat is available 
         bool isAvailable = false;
+        Seat ModifiedSeat = null;
         foreach (var availableSeat in availableSeats)
         {
             if (modifiedSeatNumber == availableSeat.SeatNumber)
             {
+                ModifiedSeat = availableSeat;
                 isAvailable = true;
             }
         }
@@ -174,7 +176,7 @@ public class BookingService : IBookingService
         }
 
         // Now update the seatnumber 
-        bookingToModify.SeatNumber = modifiedSeatNumber;
+        bookingToModify.SeatId = ModifiedSeat.SeatId;
         return bookingToModify.BookingId;
     }
     public bool CancelAnyBooking(int adminId, int bookingId)
@@ -216,7 +218,7 @@ public class BookingService : IBookingService
 
             foreach (var booking in bookingRepo.GetAllBookings())
             {
-                if (booking.SeatNumber == seat.SeatNumber && booking.BookingDate == givenDate)
+                if (booking.SeatId == seat.SeatId && booking.BookingDate == givenDate)
                 {
                     isBooked = true;
                     break;

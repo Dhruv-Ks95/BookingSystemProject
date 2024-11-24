@@ -2,7 +2,7 @@
 
 public class Employee
 {
-    private static int nextId = 1; // think DB and how to adjust then? two people simultaneously creating emps
+    private static int nextId = 1;
     public int EmployeeId { get; private set; }
     public string Name { get; set; }
     public string Email { get; set; }
