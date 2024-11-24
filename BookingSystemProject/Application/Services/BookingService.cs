@@ -63,7 +63,7 @@ public class BookingService : IBookingService
         List<Booking> userBookings = new List<Booking>();
         foreach (var booking in bookingRepo.GetAllBookings())
         {
-            if (booking.UserId == employee.EmployeeId && booking.BookingDate >= DateTime.Today && booking.BookingDate <= DateTime.Today.AddDays(30))
+            if (booking.EmployeeId == employee.EmployeeId && booking.BookingDate >= DateTime.Today && booking.BookingDate <= DateTime.Today.AddDays(30))
             {
                 userBookings.Add(booking);                
             }
