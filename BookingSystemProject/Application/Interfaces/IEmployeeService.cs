@@ -3,8 +3,7 @@
 namespace Agdata.SeatBookingSystem.Application.Interfaces;
 
 public interface IEmployeeService
-{
-    Employee CreateAnEmployee(string name, string email, RoleType role);
+{    
     Employee GetEmployeeByEmployeeId(int id);
     IEnumerable<Employee> GetAllEmployees();
     int AddAnEmployee(Employee employee);

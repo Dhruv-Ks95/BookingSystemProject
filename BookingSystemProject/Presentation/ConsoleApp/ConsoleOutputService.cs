@@ -1,4 +1,5 @@
-﻿using Agdata.SeatBookingSystem.Domain.Entities;
+﻿using Agdata.SeatBookingSystem.Application.Interfaces;
+using Agdata.SeatBookingSystem.Domain.Entities;
 
 namespace Agdata.SeatBookingSystem.Presentation.ConsoleApp;
 
@@ -44,20 +45,25 @@ public class ConsoleOutputService
         Console.ResetColor();
     }
 
-    public void PrintBookings(IEnumerable<Booking> bookings)
+    public void PrintBookings(IEnumerable<Booking> bookings, IEnumerable<Employee> users, IEnumerable<Seat> seats)
     {
         Console.ForegroundColor = ConsoleColor.Yellow;
         Console.WriteLine("Bookings: ");
         foreach (var booking in bookings)
         {
+            Employee emp = users.FirstOrDefault(e => e.EmployeeId == booking.EmployeeId);
+            Seat st = seats.FirstOrDefault(s => s.SeatId == booking.SeatId);
+            string empName = emp.Name;
+            int stNum = st.SeatNumber;
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine($"Booking ID: {booking.BookingId}, Date: {booking.BookingDate.ToShortDateString()}, UserId: {booking.EmployeeId}, SeatId : {booking.SeatId}");
+            Console.WriteLine($"Booking ID: {booking.BookingId}, Date: {booking.BookingDate.ToShortDateString()}, User Name: {empName}, Seat Number : {stNum}");
             Console.ResetColor();
         }
     }
 
     public void PrintEmployees(IEnumerable<Employee> employees)
     {
+
         Console.WriteLine("List of employees :");
         foreach (var employee in employees)
         {

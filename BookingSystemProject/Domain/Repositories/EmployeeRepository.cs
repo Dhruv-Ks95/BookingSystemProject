@@ -1,36 +1,44 @@
 ﻿using Agdata.SeatBookingSystem.Domain.Entities;
 using Agdata.SeatBookingSystem.Domain.Interfaces;
+using Agdata.SeatBookingSystem.Infrastructure.Data;
 
 namespace Agdata.SeatBookingSystem.Domain.Repositories;
 
 public class EmployeeRepository : IEmployeeRepository
 {
-    private List<Employee> _employees;
+    private SeatBookingDbContext context;
 
-    public EmployeeRepository()
+    public EmployeeRepository(SeatBookingDbContext _context)
     {
-        _employees = new List<Employee>();
+        context = _context;
     }
 
     public int AddEmployee(Employee employee)
     {
-        _employees.Add(employee);
+        context.Employees.Add(employee);
+        context.SaveChanges();
         return employee.EmployeeId;
     }
     public Employee GetEmployeeById(int employeeId)
     {
-        return _employees.Find(e => e.EmployeeId == employeeId);
+        Employee employee = context.Employees.FirstOrDefault(e => e.EmployeeId == employeeId);
+        return employee;
     }
     public bool RemoveEmployee(int employeeId)
     {
-        Employee empToDelete = GetEmployeeById(employeeId);
-        _employees.Remove(empToDelete);
-        return true;
+        var employee = context.Employees.FirstOrDefault(e => e.EmployeeId == employeeId);
+        if (employee != null)
+        {
+            context.Employees.Remove(employee);
+            var rowsAffected = context.SaveChanges();
+            return rowsAffected > 0;
+        }
+        return false;
     }
 
     public IEnumerable<Employee> GetAllEmployees()
     {
-        return _employees;
+        return context.Employees.ToList();
     }
 
 }

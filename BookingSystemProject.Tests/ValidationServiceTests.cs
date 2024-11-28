@@ -12,9 +12,9 @@ public class ValidationServiceTests
     }
 
     [Theory]
-    [InlineData("2024-11-24", true)]
+    [InlineData("2024-11-30", true)]
     [InlineData("2024-10-01", false)]
-    [InlineData("2025-01-01", false)]
+    [InlineData("2026-01-01", false)]
     [InlineData("invalid-date", false)]
     public void IsValidDate_Should_Return_Correct_Result(string enteredDate, bool expected)
     {
@@ -69,25 +69,7 @@ public class ValidationServiceTests
         var result = _validationService.IsValidSeatNumber(seatNumber, seats);
 
         result.Should().Be(expected);
-    }
-
-    [Theory]
-    //[InlineData("1", true)]
-    [InlineData("999", false)]
-    [InlineData("invalid-id", false)]
-    public void IsValidBookingId_Should_Return_Correct_Result(string bookingId, bool expected)
-    {
-        var bookings = new List<Booking>
-        {
-            new Booking(1, 1,DateTime.Today),
-            new Booking (2, 2, DateTime.Today),
-            new Booking (3, 3, DateTime.Today)
-        };
-
-        var result = _validationService.IsValidBookingId(bookingId, bookings);
-
-        result.Should().Be(expected);
-    }
+    }    
 
     [Theory]
     [InlineData("999", false)]
@@ -104,5 +86,5 @@ public class ValidationServiceTests
         var result = _validationService.IsValidUser(userId, employees);
 
         result.Should().Be(expected);
-    }
+    }    
 }

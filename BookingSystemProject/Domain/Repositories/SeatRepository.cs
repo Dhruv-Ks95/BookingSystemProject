@@ -1,36 +1,44 @@
 ﻿using Agdata.SeatBookingSystem.Domain.Entities;
 using Agdata.SeatBookingSystem.Domain.Interfaces;
+using Agdata.SeatBookingSystem.Infrastructure.Data;
 namespace Agdata.SeatBookingSystem.Domain.Repositories;
 
 public class SeatRepository : ISeatRepository
 {
-    private List<Seat> _seatList;
+    private SeatBookingDbContext context;
 
-    public SeatRepository()
+    public SeatRepository(SeatBookingDbContext _context)
     {
-        _seatList = new List<Seat>();
+        context = _context;
     }
 
     public int AddSeat(Seat seat)
     {
-        _seatList.Add(seat);
+        context.Seats.Add(seat);
+        context.SaveChanges();
         return seat.SeatId;
     }
 
     public Seat GetSeatById(int seatid)
     {
-        return _seatList.Find(s => s.SeatId == seatid);
+        Seat seat = context.Seats.FirstOrDefault(s => s.SeatId == seatid);
+        return seat;
     }
 
     public bool RemoveSeat(int seatId)
     {
         Seat seatToRemove = GetSeatById(seatId);
-        _seatList.Remove(seatToRemove);
-        return true;
+        if (seatToRemove != null)
+        {
+            context.Seats.Remove(seatToRemove);
+            var rowsAffected = context.SaveChanges();
+            return rowsAffected > 0;
+        }   
+        return false;
     }
 
     public IEnumerable<Seat> GetAllSeats()
     {
-        return _seatList;
+        return context.Seats.ToList();
     }
 }
