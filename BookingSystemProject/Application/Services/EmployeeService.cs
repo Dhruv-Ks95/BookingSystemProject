@@ -11,12 +11,7 @@ public class EmployeeService : IEmployeeService
     public EmployeeService(IEmployeeRepository employeeRepo)
     {
         employeeRepository = employeeRepo;
-    }
-
-    public Employee CreateAnEmployee(string name, string email, RoleType role)
-    {
-        return new Employee(name, email, role);
-    }
+    }    
 
     public Employee GetEmployeeByEmployeeId(int id)
     {

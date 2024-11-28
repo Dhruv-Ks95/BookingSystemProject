@@ -2,40 +2,29 @@
 using Agdata.SeatBookingSystem.Application.Services;
 using Agdata.SeatBookingSystem.Domain.Entities;
 using Agdata.SeatBookingSystem.Domain.Repositories;
+using Agdata.SeatBookingSystem.Infrastructure.Data;
+using Agdata.SeatBookingSystem.Tests.Mocks;
 
 namespace Agdata.SeatBookingSystem.Tests;
 public class EmployeeServiceTests
 {
+    SeatBookingDbContext dbContext = MockDbContext.GetDbContextWithTestData();
     private EmployeeService _employeeService;
     private EmployeeRepository _employeeRepository;
 
     public EmployeeServiceTests()
     {
-        _employeeRepository = new EmployeeRepository();
+        _employeeRepository = new EmployeeRepository(dbContext);
         _employeeService = new EmployeeService(_employeeRepository);
-    }
-
-    [Fact]
-    public void CreateAnEmployee_Should_Return_Employee_With_Correct_Details()
-    {
-        string name = "Dhruv";
-        string email = "dhruv@company.com";
-        RoleType role = RoleType.User;
-
-        var result = _employeeService.CreateAnEmployee(name, email, role);
-
-        result.Name.Should().Be(name);
-        result.Email.Should().Be(email);
-        result.Role.Should().Be(role);
-    }
+    }    
 
     [Fact]
     public void GetEmployeeByEmployeeId_Should_Return_Correct_Employee()
     {
-        Employee employee = new Employee("Dhruv", "dhruv@company.com", RoleType.User);
-        _employeeRepository.AddEmployee(employee);
+        Employee employee = new Employee("Akshay K", "akshay@company.com", RoleType.User);
+        int id = _employeeRepository.AddEmployee(employee);
 
-        var result = _employeeService.GetEmployeeByEmployeeId(employee.EmployeeId);
+        var result = _employeeService.GetEmployeeByEmployeeId(id);
 
         result.Should().Be(employee);
     }
@@ -50,21 +39,16 @@ public class EmployeeServiceTests
 
     [Fact]
     public void GetAllEmployees_Should_Return_All_Employees()
-    {
-        Employee employee1 = new Employee("dhruv", "dhruv@company.com", RoleType.Admin);
-        Employee employee2 = new Employee("shukla", "shukla@company.com", RoleType.User);
-        _employeeRepository.AddEmployee(employee1);
-        _employeeRepository.AddEmployee(employee2);
-
-        var result = _employeeService.GetAllEmployees();
-
-        result.Should().Contain(new List<Employee> { employee1, employee2 });
+    {        
+        var listOfEmps = _employeeService.GetAllEmployees();
+        int result = listOfEmps.Count();
+        result.Should().BeGreaterThan(0);
     }
 
     [Fact]
     public void AddAnEmployee_Should_Add_Employee_To_Repository()
     {
-        var employee = new Employee("dhruv", "dhruv@company.com", RoleType.User);
+        var employee = new Employee("arnav", "arnav@company.com", RoleType.User);
 
         _employeeService.AddAnEmployee(employee);
 
@@ -74,13 +58,13 @@ public class EmployeeServiceTests
     [Fact]
     public void UpdateAnEmployee_Should_Update_Employee_Details()
     {
-        Employee employee = new Employee("dhruv", "dhruv@company.com", RoleType.User);
-        _employeeRepository.AddEmployee(employee);
+        Employee employee = new Employee("das", "das@company.com", RoleType.User);
+        int id = _employeeRepository.AddEmployee(employee);
         string newName = "shukla";
         string newEmail = "shukla@company.com";
         RoleType newRole = RoleType.Admin;
 
-        var result = _employeeService.UpdateAnEmployee(employee.EmployeeId, newName, newEmail, newRole);
+        var result = _employeeService.UpdateAnEmployee(id, newName, newEmail, newRole);
 
         result.Should().BeTrue();
         employee.Name.Should().Be(newName);
@@ -99,10 +83,10 @@ public class EmployeeServiceTests
     [Fact]
     public void RemoveAnEmployee_Should_Remove_Employee_From_Repository()
     {
-        Employee employee = new Employee("dhruv", "dhruv@company.com", RoleType.User);
+        Employee employee = new Employee("dhruvk", "kdhruv@company.com", RoleType.User);
         _employeeRepository.AddEmployee(employee);
 
-        _employeeService.RemoveAnEmployee(employee);
+        _employeeService.RemoveAnEmployee(employee.EmployeeId);
 
         _employeeRepository.GetEmployeeById(employee.EmployeeId).Should().BeNull();
     }

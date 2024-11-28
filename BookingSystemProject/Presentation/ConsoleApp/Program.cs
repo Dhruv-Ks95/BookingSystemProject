@@ -3,6 +3,8 @@ using Agdata.SeatBookingSystem.Application.Services;
 using Agdata.SeatBookingSystem.Domain.Entities;
 using Agdata.SeatBookingSystem.Domain.Interfaces;
 using Agdata.SeatBookingSystem.Domain.Repositories;
+using Agdata.SeatBookingSystem.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Agdata.SeatBookingSystem.Presentation.ConsoleApp;
 
@@ -16,35 +18,23 @@ internal class Program
     static void Main(string[] args)
     {
         // -----------------INITIALIZING------------------------START
+        
+        using SeatBookingDbContext context = new SeatBookingDbContext();
 
-        IEmployeeRepository employeeRepository = new EmployeeRepository();
-        ISeatRepository seatRepository = new SeatRepository();
-        IBookingRepository bookingRepository = new BookingRepository();
+        IEmployeeRepository employeeRepository = new EmployeeRepository(context);
+        ISeatRepository seatRepository = new SeatRepository(context);
+        IBookingRepository bookingRepository = new BookingRepository(context);
+
         IValidationService validationService = new ValidationService();
 
         employeeService = new EmployeeService(employeeRepository);
         seatService = new SeatService(seatRepository);
-        bookingService = new BookingService(bookingRepository, seatRepository,employeeService);
+        bookingService = new BookingService(bookingRepository, seatRepository, employeeService);
 
-
-        for (int i = 1; i < 11; i++) // Add seats to the repository using the service 
-        {
-            seatService.AddASeat(seatService.CreateASeat(i));
-        }
-
-
-        // Create and Add employees to employee repository using employeeService 
-        Employee user = employeeService.CreateAnEmployee("Dhruv", "dhruvk@company.com", RoleType.User);
-        Employee admin = employeeService.CreateAnEmployee("Admin", "admin@company.com", RoleType.Admin);
-
-        // List of employees in the company
-        employeeService.AddAnEmployee(user);
-        employeeService.AddAnEmployee(admin);
-        employeeService.AddAnEmployee(employeeService.CreateAnEmployee("Mr.Shukla", "shukla@company.com", RoleType.User));
-        employeeService.AddAnEmployee(employeeService.CreateAnEmployee("Mr.Das", "das@company.com", RoleType.User));
-        employeeService.AddAnEmployee(employeeService.CreateAnEmployee("Mr.Reddy", "reddy@company.com", RoleType.User));
-
-        MenuMethods menuMethods = new MenuMethods(bookingService, validationService, employeeService);
+        Employee admin = employeeService.GetEmployeeByEmployeeId(2);
+        Employee user = employeeService.GetEmployeeByEmployeeId(6);
+     
+        MenuMethods menuMethods = new MenuMethods(bookingService, validationService, employeeService, seatService);
 
         // -----------------INITIALIZING------------------------END
 
@@ -77,6 +67,7 @@ internal class Program
                     break;
             }
         }
+
         // -----------------MAIN PROGRAM------------------------END
     }
 

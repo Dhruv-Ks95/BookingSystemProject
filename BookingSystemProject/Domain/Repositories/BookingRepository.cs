@@ -1,39 +1,47 @@
 ﻿using Agdata.SeatBookingSystem.Domain.Entities;
 using Agdata.SeatBookingSystem.Domain.Interfaces;
+using Agdata.SeatBookingSystem.Infrastructure.Data;
 
 namespace Agdata.SeatBookingSystem.Domain.Repositories;
 
 public class BookingRepository : IBookingRepository
 {
-    private List<Booking> _bookings; // For storing the bookings Data 
+    private SeatBookingDbContext context;
 
-    public BookingRepository()
+    public BookingRepository(SeatBookingDbContext _context)
     {
-        _bookings = new List<Booking>();
+        context = _context;
     }
 
     public int AddBooking(Booking booking)
     {
-        _bookings.Add(booking);
+        context.Bookings.Add(booking);
+        context.SaveChanges();
         return booking.BookingId;
     }
 
 
     public Booking GetBookingById(int bookingId)
     {
-        return _bookings.Find(b => b.BookingId == bookingId);
+        Booking booking = context.Bookings.FirstOrDefault(b => b.BookingId == bookingId);
+        return booking;
     }
 
     public bool RemoveBooking(int bookingId)
     {
         Booking bookingToDelete = GetBookingById(bookingId);
-        _bookings.Remove(bookingToDelete);
-        return true;
+        if (bookingToDelete != null)
+        {
+            context.Bookings.Remove(bookingToDelete);
+            var rowsAffected = context.SaveChanges();
+            return rowsAffected> 0;
+        }
+        return false;
     }
 
     public IEnumerable<Booking> GetAllBookings()
     {
-        return _bookings;
+        return context.Bookings.ToList();
     }
 
 
