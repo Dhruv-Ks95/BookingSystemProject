@@ -12,10 +12,6 @@ public class SeatService : ISeatService
         this.seatRepository = seatRepository;
     }
 
-    public Seat CreateASeat(int seatNumber)
-    {
-        return new Seat(seatNumber);
-    }
     public int AddASeat(Seat seat)
     {
         seatRepository.AddSeat(seat);

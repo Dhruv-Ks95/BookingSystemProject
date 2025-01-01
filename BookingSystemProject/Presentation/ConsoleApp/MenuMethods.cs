@@ -6,13 +6,15 @@ public class MenuMethods
 {
     private IBookingService bookingService;
     private IValidationService validationService;
+    private ISeatService seatService;
     private IEmployeeService employeeService;
     private ConsoleOutputService consoleOutputService = new ConsoleOutputService();
-    public MenuMethods(IBookingService bookingService, IValidationService validationService, IEmployeeService employeeService)
+    public MenuMethods(IBookingService bookingService, IValidationService validationService, IEmployeeService employeeService, ISeatService seatService)
     {
         this.bookingService = bookingService;
         this.validationService = validationService;
         this.employeeService = employeeService;
+        this.seatService = seatService;
     }
 
     // DASHBOARDS
@@ -133,7 +135,9 @@ public class MenuMethods
             consoleOutputService.PrintWarning("You have no bookings in the next 30 days.");
             return;
         }
-        consoleOutputService.PrintBookings(userBookings);
+        IEnumerable<Employee> users = employeeService.GetAllEmployees();
+        IEnumerable<Seat> seats = seatService.GetEverySeat();
+        consoleOutputService.PrintBookings(userBookings,users,seats);
     }
 
     public void CancelUserBooking(int empId)
@@ -145,7 +149,7 @@ public class MenuMethods
             consoleOutputService.PrintWarning("You have no bookings to cancel in the next 30 days.");
             return;
         }
-        consoleOutputService.PrintBookings(userBookings);
+        consoleOutputService.PrintBookings(userBookings, employeeService.GetAllEmployees(), seatService.GetEverySeat());
 
         consoleOutputService.PrintDanger("Enter the Booking ID to cancel: ");
 
@@ -227,7 +231,7 @@ public class MenuMethods
             consoleOutputService.PrintError("No Bookings on selected Date!");
             return;
         }
-        consoleOutputService.PrintBookings(bookingsOnSelectedDate);
+        consoleOutputService.PrintBookings(bookingsOnSelectedDate, employeeService.GetAllEmployees(), seatService.GetEverySeat());
         Console.WriteLine("Enter a Booking ID to modify from the above list: ");
         string bookingIdSelected = Console.ReadLine();
         if (!validationService.IsValidBookingId(bookingIdSelected, bookingsOnSelectedDate))
@@ -271,7 +275,7 @@ public class MenuMethods
             consoleOutputService.PrintWarning("No Bookings on Selected Date!");
             return;
         }
-        consoleOutputService.PrintBookings(bookingsOnDate);
+        consoleOutputService.PrintBookings(bookingsOnDate, employeeService.GetAllEmployees(), seatService.GetEverySeat());
 
     }
 
@@ -291,7 +295,7 @@ public class MenuMethods
             consoleOutputService.PrintError("No Bookings on selected Date!");
             return;
         }
-        consoleOutputService.PrintBookings(bookingsOnDate);
+        consoleOutputService.PrintBookings(bookingsOnDate, employeeService.GetAllEmployees(), seatService.GetEverySeat());
         consoleOutputService.PrintDanger("Select Booking Id to delete from the list :");
         string bookingIdToSelect = Console.ReadLine();
         if (!validationService.IsValidBookingId(bookingIdToSelect, bookingsOnDate))

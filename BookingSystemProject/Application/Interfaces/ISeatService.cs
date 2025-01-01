@@ -3,7 +3,6 @@
 namespace Agdata.SeatBookingSystem.Application.Interfaces;
 public interface ISeatService
 {
-    Seat CreateASeat(int seatNumber);
     int AddASeat(Seat seat); 
     bool RemoveASeat(int seatId); 
     Seat GetSeatBySeatId(int seatId);

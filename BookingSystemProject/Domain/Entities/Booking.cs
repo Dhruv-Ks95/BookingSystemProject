@@ -2,7 +2,7 @@
 {
     public class Booking
     {
-        private static int nextBookingId = 1;
+        //private static int nextBookingId = 1;
 
         public int BookingId { get; set; }
         public int EmployeeId { get; set; }
@@ -11,10 +11,13 @@
 
         public Booking(int employeeId, DateTime bookingDate, int seatId)
         {
-            BookingId = nextBookingId++;
+            //BookingId = nextBookingId++;
             EmployeeId = employeeId;
             SeatId = seatId;
             BookingDate = bookingDate;
         }
+
+        public Booking() { }
+
     }
 }
